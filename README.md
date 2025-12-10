@@ -63,7 +63,7 @@ The desktop application is located in the root of the repository as `seamless.py
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/iman-zamani/seamless.git](https://github.com/iman-zamani/seamless.git)
+    git clone https://github.com/iman-zamani/seamless.git
     cd seamless
     ```
 
