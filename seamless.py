@@ -260,10 +260,6 @@ class SeamlessApp(ctk.CTk):
             
             self.log_box.insert("end", f"Start: {filename} ({filesize/1024/1024:.2f} MB)\n")
             self.progress_bar.set(0)
-            
-            # --- MODIFIED SECTION: Get Downloads Folder ---
-            # Path.home() gets user directory (e.g. C:\Users\Bob or /home/bob)
-            # / "Downloads" appends the folder name safely for any OS
             downloads_path = Path.home() / "Downloads"
             
             # Create the path if it somehow doesn't exist

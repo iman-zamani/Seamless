@@ -99,12 +99,6 @@ The process is initiator-driven, requiring the receiver to be ready before the s
 4.  Click **"Scan Network"** and wait for the receiver's name to appear.
 5.  Select the **Receiver's name** from the list to begin the transfer.
 
-### File Locations
-
-| Platform | Default Save Location |
-| :--- | :--- |
-| **Desktop** | A newly created `received_files` folder in the application's root directory. |
-| **Android** | The system's standard **Downloads** folder. |
 
 ---
 
