@@ -1,0 +1,79 @@
+# ------------------------------------ #
+# Operating System & IDE Artifacts     #
+# ------------------------------------ #
+# macOS files
+.DS_Store
+
+# Windows thumbnail cache
+Thumbs.db
+
+# JetBrains IDEs
+.idea/
+
+# Android Studio (if not already covered by .idea/)
+.gradle/
+local.properties
+.kotlin/sessions/
+
+# ------------------------------------ #
+# Python & Virtual Environment         #
+# ------------------------------------ #
+# Virtual environment directory (ENV)
+/ENV/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyd
+*.pyo
+
+# Build artifacts (for sdist and wheel)
+/dist/
+/build/
+*.egg-info/
+
+# PyInstaller/cx_Freeze build output
+# Specifically the top-level 'dist' and 'build' folders you showed
+# And temporary files
+/build/
+*.spec
+# Already covered by /dist/ but safe to include:
+/*.app/
+
+# ------------------------------------ #
+# Android Build Artifacts              #
+# ------------------------------------ #
+# Standard Gradle build directories
+/Android/app/build/
+/Android/build/
+
+# Android Packages (APKs) for release/debug
+# Excludes compiled application files
+/Android/app/release/*.apk
+/Android/app/debug/*.apk
+/Android/app/release/
+/Android/app/debug/
+# More generalized build output folders within the Android directory
+/Android/**/build/
+
+# Generated files specific to builds
+# Output metadata, profilers, intermediate build files
+/Android/app/release/output-metadata.json
+/Android/app/release/baselineProfiles/
+/Android/app/intermediates/
+/Android/app/outputs/
+
+# ------------------------------------ #
+# Executables and Binaries             #
+# ------------------------------------ #
+# The compiled desktop application files (seamless.app and executable files)
+# The parent 'dist' folder is already ignored, but adding the specific output for clarity
+/dist/seamless.app/
+/dist/seamless
+/dist/seamless/
+
+# ------------------------------------ #
+# Git Artifacts (for completeness)     #
+# ------------------------------------ #
+# You mentioned the current directory is a git repo, so explicitly ignoring the git directory itself.
+/.git/
