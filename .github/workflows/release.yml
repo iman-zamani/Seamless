@@ -1,0 +1,237 @@
+name: Build and Release Multi-Platform
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  # ==========================================================
+  # 1. ANDROID BUILD
+  # ==========================================================
+  build-android:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./Android
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > app/release.keystore
+
+      - name: Build Release APK
+        env:
+          SIGNING_STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: ./gradlew assembleRelease
+
+      - name: Rename APK
+        run: |
+          VERSION="${GITHUB_REF#refs/tags/}"
+          mv app/build/outputs/apk/release/app-release.apk ../seamless-${VERSION}-android.apk
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: seamless-*-android.apk
+
+  # ==========================================================
+  # 2. WINDOWS BUILD (x86_64)
+  # ==========================================================
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          pip install customtkinter pyinstaller
+
+      # Windows requires .ico. We convert the PNG to ICO on the fly.
+      - name: Convert Icon to ICO
+        run: |
+          magick Assets/seamless.png -define icon:auto-resize=256,128,64,48,32,16 Assets/seamless.ico
+
+      - name: Build EXE
+        run: |
+          pyinstaller --onefile --noconsole --icon=Assets/seamless.ico seamless.py
+
+      - name: Rename
+        shell: bash
+        run: |
+          VERSION="${GITHUB_REF#refs/tags/}"
+          mv dist/seamless.exe seamless-${VERSION}-windows-x64.exe
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-exe
+          path: seamless-*-windows-x64.exe
+
+  # ==========================================================
+  # 3. MACOS BUILD (Intel & Apple Silicon)
+  # ==========================================================
+  build-macos:
+    name: build-macos-${{ matrix.architecture }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: macos-13
+            architecture: x86_64
+          - os: macos-14
+            architecture: arm64
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          pip install customtkinter pyinstaller
+          brew install create-dmg
+
+      - name: Build App Bundle
+        # FIXED: Pointing to Assets/seamless.icns
+        run: |
+          pyinstaller --onedir --windowed --icon=Assets/seamless.icns seamless.py
+
+      - name: Create DMG
+        run: |
+          VERSION="${GITHUB_REF#refs/tags/}"
+          DMG_NAME="seamless-${VERSION}-macos-${{ matrix.architecture }}.dmg"
+          
+          # FIXED: Pointing to Assets/seamless.icns for the volume icon
+          create-dmg \
+            --volname "Seamless" \
+            --volicon "Assets/seamless.icns" \
+            --window-pos 200 120 \
+            --window-size 600 400 \
+            --icon-size 120 \
+            --icon "seamless.app" 150 200 \
+            --app-drop-link 450 200 \
+            "$DMG_NAME" \
+            "dist/seamless.app"
+
+      - name: Zip DMG
+        run: |
+          VERSION="${GITHUB_REF#refs/tags/}"
+          DMG_NAME="seamless-${VERSION}-macos-${{ matrix.architecture }}.dmg"
+          zip "${DMG_NAME}.zip" "$DMG_NAME"
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-${{ matrix.architecture }}
+          path: seamless-*.dmg.zip
+
+  # ==========================================================
+  # 4. LINUX BUILD + Packaging
+  # ==========================================================
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install System Deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-tk binutils ruby-dev build-essential
+          sudo gem install fpm
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Python Deps
+        run: pip install customtkinter pyinstaller
+
+      - name: Build Binary
+        # We assume seamless.png is 512x512 or similar high res
+        run: pyinstaller --onefile seamless.py
+
+      - name: Prepare Variables
+        id: vars
+        run: |
+          VERSION="${GITHUB_REF#refs/tags/}"
+          CLEAN_VERSION="${VERSION#v}"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
+
+      - name: Package Tarball
+        run: |
+          mv dist/seamless seamless
+          tar -czvf seamless-${{ env.VERSION }}-linux-x64.tar.gz seamless
+
+      # Package DEB (Debian/Ubuntu) - INCLUDES ICON
+      - name: Package DEB
+        run: |
+          fpm -s dir -t deb -n seamless -v ${{ env.CLEAN_VERSION }} \
+          --prefix /usr/local/bin \
+          --description "Seamless File Transfer" \
+          --deb-no-default-config-files \
+          seamless
+
+      # Package RPM (RedHat/Fedora) - INCLUDES ICON
+      - name: Package RPM
+        run: |
+          fpm -s dir -t rpm -n seamless -v ${{ env.CLEAN_VERSION }} \
+          --prefix /usr/local/bin \
+          --description "Seamless File Transfer" \
+          seamless
+
+      - name: Rename Packages
+        run: |
+          mv seamless_*.deb seamless-${{ env.VERSION }}-linux-amd64.deb
+          mv seamless-*.x86_64.rpm seamless-${{ env.VERSION }}-linux-x86_64.rpm
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-packages
+          path: |
+            *.tar.gz
+            *.deb
+            *.rpm
+
+  # ==========================================================
+  # 5. RELEASE
+  # ==========================================================
+  release:
+    needs: [build-android, build-windows, build-macos, build-linux]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          pattern: '*'
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: artifacts/*
+          generate_release_notes: true
