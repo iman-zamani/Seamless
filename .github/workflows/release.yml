@@ -87,18 +87,18 @@ jobs:
           path: seamless-*-windows-x64.exe
 
   # ==========================================================
-  # 3. MACOS BUILD (Intel & Apple Silicon)
+  # 3. MACOS BUILD (Intel & Apple Silicon via Rosetta)
   # ==========================================================
   build-macos:
-    name: build-macos-${{ matrix.architecture }}
-    runs-on: ${{ matrix.os }}
+    name: build-macos-${{ matrix.target_arch }}
+    runs-on: macos-14 # Use Apple Silicon for everything (Standard now)
     strategy:
       matrix:
         include:
-          - os: macos-13
-            architecture: x86_64
-          - os: macos-14
-            architecture: arm64
+          - target_arch: x86_64
+            python_arch: x64    # Tells Python to run in Intel Mode
+          - target_arch: arm64
+            python_arch: arm64  # Tells Python to run in Native Mode
     steps:
       - uses: actions/checkout@v4
 
@@ -106,6 +106,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
+          architecture: ${{ matrix.python_arch }} # <--- This is the magic trick
 
       - name: Install Dependencies
         run: |
@@ -113,16 +114,14 @@ jobs:
           brew install create-dmg
 
       - name: Build App Bundle
-        # FIXED: Pointing to Assets/seamless.icns
         run: |
           pyinstaller --onedir --windowed --icon=Assets/seamless.icns seamless.py
 
       - name: Create DMG
         run: |
           VERSION="${GITHUB_REF#refs/tags/}"
-          DMG_NAME="seamless-${VERSION}-macos-${{ matrix.architecture }}.dmg"
+          DMG_NAME="seamless-${VERSION}-macos-${{ matrix.target_arch }}.dmg"
           
-          # FIXED: Pointing to Assets/seamless.icns for the volume icon
           create-dmg \
             --volname "Seamless" \
             --volicon "Assets/seamless.icns" \
@@ -137,13 +136,13 @@ jobs:
       - name: Zip DMG
         run: |
           VERSION="${GITHUB_REF#refs/tags/}"
-          DMG_NAME="seamless-${VERSION}-macos-${{ matrix.architecture }}.dmg"
+          DMG_NAME="seamless-${VERSION}-macos-${{ matrix.target_arch }}.dmg"
           zip "${DMG_NAME}.zip" "$DMG_NAME"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: macos-${{ matrix.architecture }}
+          name: macos-${{ matrix.target_arch }}
           path: seamless-*.dmg.zip
 
   # ==========================================================
