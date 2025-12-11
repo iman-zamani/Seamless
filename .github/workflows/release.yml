@@ -37,10 +37,12 @@ jobs:
           SIGNING_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: ./gradlew assembleRelease
 
+      # SMART RENAME: Finds the APK wherever Gradle put it
       - name: Rename APK
         run: |
           VERSION="${GITHUB_REF#refs/tags/}"
-          mv app/build/outputs/apk/release/app-release.apk ../seamless-${VERSION}-android.apk
+          echo "Looking for APK..."
+          find app/build/outputs/apk/release -name "*.apk" -exec mv {} ../seamless-${VERSION}-android.apk \;
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -59,13 +61,12 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.11' # Changed to 3.11 for stability
 
       - name: Install Dependencies
         run: |
           pip install customtkinter pyinstaller
 
-      # Windows requires .ico. We convert the PNG to ICO on the fly.
       - name: Convert Icon to ICO
         run: |
           magick Assets/seamless.png -define icon:auto-resize=256,128,64,48,32,16 Assets/seamless.ico
@@ -91,22 +92,22 @@ jobs:
   # ==========================================================
   build-macos:
     name: build-macos-${{ matrix.target_arch }}
-    runs-on: macos-14 # Use Apple Silicon for everything (Standard now)
+    runs-on: macos-14 # Uses Apple Silicon runner for both
     strategy:
       matrix:
         include:
           - target_arch: x86_64
-            python_arch: x64    # Tells Python to run in Intel Mode
+            python_arch: x64    # Runs in Rosetta Mode
           - target_arch: arm64
-            python_arch: arm64  # Tells Python to run in Native Mode
+            python_arch: arm64  # Runs in Native Mode
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
-          architecture: ${{ matrix.python_arch }} # <--- This is the magic trick
+          python-version: '3.11' # <--- FIXED: 3.11 works better with Rosetta
+          architecture: ${{ matrix.python_arch }}
 
       - name: Install Dependencies
         run: |
@@ -162,13 +163,12 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.11' # Changed to 3.11 for consistency
 
       - name: Install Python Deps
         run: pip install customtkinter pyinstaller
 
       - name: Build Binary
-        # We assume seamless.png is 512x512 or similar high res
         run: pyinstaller --onefile seamless.py
 
       - name: Prepare Variables
@@ -184,7 +184,6 @@ jobs:
           mv dist/seamless seamless
           tar -czvf seamless-${{ env.VERSION }}-linux-x64.tar.gz seamless
 
-      # Package DEB (Debian/Ubuntu) - INCLUDES ICON
       - name: Package DEB
         run: |
           fpm -s dir -t deb -n seamless -v ${{ env.CLEAN_VERSION }} \
@@ -193,7 +192,6 @@ jobs:
           --deb-no-default-config-files \
           seamless
 
-      # Package RPM (RedHat/Fedora) - INCLUDES ICON
       - name: Package RPM
         run: |
           fpm -s dir -t rpm -n seamless -v ${{ env.CLEAN_VERSION }} \
