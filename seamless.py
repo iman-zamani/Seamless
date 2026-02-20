@@ -46,13 +46,21 @@ class CircularProgress(ctk.CTkCanvas):
 
     def set(self, progress):
         self.delete("all")
-        # Dark background ring
-        self.create_oval(2, 2, self.size-2, self.size-2, outline="#222222", width=3)
-        # Bright purple progress ring
-        angle = int(360 * progress)
-        if angle > 0:
-            self.create_arc(2, 2, self.size-2, self.size-2, start=90, extent=-angle, 
-                            outline=HOVER_PURPLE, width=3, style="arc")
+        if progress >= 1.0:
+            # Draw a full outer ring
+            self.create_oval(2, 2, self.size-2, self.size-2, outline=HOVER_PURPLE, width=3)
+            # Draw a checkmark inside
+            scale = self.size / 24.0
+            self.create_line(6*scale, 12*scale, 10*scale, 16*scale, fill=HOVER_PURPLE, width=3, capstyle="round", joinstyle="round")
+            self.create_line(10*scale, 16*scale, 18*scale, 8*scale, fill=HOVER_PURPLE, width=3, capstyle="round", joinstyle="round")
+        else:
+            # Dark background ring
+            self.create_oval(2, 2, self.size-2, self.size-2, outline="#222222", width=3)
+            # Bright purple progress ring
+            angle = int(360 * progress)
+            if angle > 0:
+                self.create_arc(2, 2, self.size-2, self.size-2, start=90, extent=-angle, 
+                                outline=HOVER_PURPLE, width=3, style="arc")
 
 
 class SeamlessApp(ctk.CTk):
@@ -263,14 +271,16 @@ class SeamlessApp(ctk.CTk):
             row_frame = ctk.CTkFrame(self.progress_scroll, fg_color="transparent")
             row_frame.pack(fill="x", pady=5)
             
-            filename = os.path.basename(f)
-            lbl = ctk.CTkLabel(row_frame, text=filename, font=("Arial", 14))
-            lbl.pack(side="left", padx=10)
-            
+            # Progress bar packed first (left)
             circ_prog = CircularProgress(row_frame, size=24, bg_color="#111111")
-            circ_prog.pack(side="right", padx=10)
+            circ_prog.pack(side="left", padx=(10, 5))
             self.file_progress_widgets[f] = circ_prog
 
+            # Filename packed second
+            filename = os.path.basename(f)
+            lbl = ctk.CTkLabel(row_frame, text=filename, font=("Arial", 14))
+            lbl.pack(side="left", padx=(0, 10))
+            
         # Start thread
         threading.Thread(target=self.process_send_files, args=(target_ip,), daemon=True).start()
 
@@ -310,7 +320,7 @@ class SeamlessApp(ctk.CTk):
                         self.after(0, self.lbl_overall.configure, text=f"Total Progress: {int(overall_prog*100)}%")
 
                 s.close()
-                self.after(0, circ_widget.set, 1.0) # Ensure it shows 100%
+                self.after(0, circ_widget.set, 1.0) # Ensure it shows 100% and triggers the check mark
 
             # Finished
             self.after(0, self.show_success_and_return)
