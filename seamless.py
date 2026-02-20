@@ -27,43 +27,84 @@ TCP_PORT = 5001
 BUFFER_SIZE = 1024 * 64
 SEPARATOR = "<SEPARATOR>"
 
+# --- FUTURISTIC THEME COLORS ---
+BG_COLOR = "#050505"
+FRAME_COLOR = "#0A0A0A"
+PRIMARY_PURPLE = "#7000FF"
+HOVER_PURPLE = "#A200FF"
+TEXT_COLOR = "#FFFFFF"
+MUTED_TEXT = "#888888"
+
 ctk.set_appearance_mode("Dark")
-ctk.set_default_color_theme("dark-blue")
+
+class CircularProgress(ctk.CTkCanvas):
+    """Custom circular progress bar for individual file tracking."""
+    def __init__(self, parent, size=24, bg_color=FRAME_COLOR, **kwargs):
+        super().__init__(parent, width=size, height=size, bg=bg_color, highlightthickness=0, **kwargs)
+        self.size = size
+        self.set(0)
+
+    def set(self, progress):
+        self.delete("all")
+        # Dark background ring
+        self.create_oval(2, 2, self.size-2, self.size-2, outline="#222222", width=3)
+        # Bright purple progress ring
+        angle = int(360 * progress)
+        if angle > 0:
+            self.create_arc(2, 2, self.size-2, self.size-2, start=90, extent=-angle, 
+                            outline=HOVER_PURPLE, width=3, style="arc")
+
 
 class SeamlessApp(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("Seamless Desktop")
-        self.geometry("600x550")
+        self.geometry("650x650")
+        self.configure(fg_color=BG_COLOR)
         
         self.username = f"User_{os.getpid()}"
-        self.my_ip = self.get_local_ip()
         self.peers = {} 
         self.selected_files = []
         self.server_running = False
+        self.current_state = "menu" # Tracks where the back button should go
 
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure(1, weight=1)
-
+        # --- HEADER & NAVIGATION ---
         self.header_frame = ctk.CTkFrame(self, fg_color="transparent")
-        self.header_frame.grid(row=0, column=0, padx=20, pady=20, sticky="ew")
+        self.header_frame.pack(fill="x", padx=20, pady=(20, 0))
         
-        self.lbl_title = ctk.CTkLabel(self.header_frame, text="Seamless", font=("Roboto Medium", 28))
-        self.lbl_title.pack(side="left", padx=10)
+        self.btn_back = ctk.CTkButton(self.header_frame, text="← Back", width=60, 
+                                      fg_color="transparent", hover_color="#1A1A1A",
+                                      text_color=MUTED_TEXT, font=("Arial", 14, "bold"),
+                                      command=self.handle_back_button)
+        # Initially hidden on the main menu
+        self.btn_back.pack(side="left")
+        self.btn_back.pack_forget() 
+
+        self.lbl_title = ctk.CTkLabel(self.header_frame, text="SEAMLESS", 
+                                      font=("Arial Black", 24), text_color=PRIMARY_PURPLE)
+        self.lbl_title.pack(side="left", padx=20)
         
-        self.entry_username = ctk.CTkEntry(self.header_frame, width=150, placeholder_text="Username")
+        self.btn_update_user = ctk.CTkButton(self.header_frame, text="Set", width=40, 
+                                             fg_color=PRIMARY_PURPLE, hover_color=HOVER_PURPLE,
+                                             command=self.update_username)
+        self.btn_update_user.pack(side="right")
+
+        self.entry_username = ctk.CTkEntry(self.header_frame, width=130, 
+                                           fg_color="#111111", border_color=PRIMARY_PURPLE,
+                                           placeholder_text="Username")
         self.entry_username.insert(0, self.username)
         self.entry_username.pack(side="right", padx=10)
         
-        self.btn_update_user = ctk.CTkButton(self.header_frame, text="Set", width=50, command=self.update_username)
-        self.btn_update_user.pack(side="right")
+        # --- MAIN CONTENT AREA ---
+        self.main_frame = ctk.CTkFrame(self, fg_color=FRAME_COLOR, corner_radius=15)
+        self.main_frame.pack(fill="both", expand=True, padx=20, pady=20)
 
-        self.main_frame = ctk.CTkFrame(self, corner_radius=10)
-        self.main_frame.grid(row=1, column=0, padx=20, pady=(0, 20), sticky="nsew")
-
-        self.show_menu()
+        # Start background UDP listener for discovery
         threading.Thread(target=self.udp_listener, daemon=True).start()
+        
+        self.show_menu()
 
+    # --- NETWORKING HELPERS ---
     def get_local_ip(self):
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -72,10 +113,7 @@ class SeamlessApp(ctk.CTk):
             s.close()
             return ip
         except:
-            try:
-                return socket.gethostbyname(socket.gethostname())
-            except:
-                return "127.0.0.1"
+            return "127.0.0.1"
 
     def get_all_interfaces(self):
         try:
@@ -100,79 +138,238 @@ class SeamlessApp(ctk.CTk):
         self.username = self.entry_username.get()
         messagebox.showinfo("Info", f"Username updated to {self.username}")
 
+    # --- UI NAVIGATION & VIEWS ---
     def clear_main_frame(self):
         for widget in self.main_frame.winfo_children():
             widget.destroy()
 
+    def handle_back_button(self):
+        if self.current_state == "select_device":
+            self.show_select_files_ui()
+        else:
+            self.show_menu()
+
+    def update_navigation(self, state):
+        self.current_state = state
+        if state == "menu" or state == "sending":
+            self.btn_back.pack_forget() # Hide back button on main menu or while actively sending
+        else:
+            self.btn_back.pack(side="left", before=self.lbl_title)
+
     def show_menu(self):
         self.clear_main_frame()
         self.server_running = False
+        self.update_navigation("menu")
         
-        btn_send = ctk.CTkButton(self.main_frame, text="SEND FILES", width=220, height=60, font=("Arial", 16, "bold"), command=self.show_send_ui)
-        btn_send.pack(pady=(60, 20))
+        lbl_welcome = ctk.CTkLabel(self.main_frame, text="What would you like to do?", font=("Arial", 18))
+        lbl_welcome.pack(pady=(60, 40))
+
+        btn_send = ctk.CTkButton(self.main_frame, text="SEND FILES", width=250, height=70, 
+                                 font=("Arial", 16, "bold"), fg_color=PRIMARY_PURPLE, 
+                                 hover_color=HOVER_PURPLE, command=self.show_select_files_ui)
+        btn_send.pack(pady=10)
         
-        btn_receive = ctk.CTkButton(self.main_frame, text="RECEIVE FILES", width=220, height=60, font=("Arial", 16, "bold"), fg_color="#2CC985", hover_color="#229A65", command=self.show_receive_ui)
+        btn_receive = ctk.CTkButton(self.main_frame, text="RECEIVE FILES", width=250, height=70, 
+                                    font=("Arial", 16, "bold"), fg_color="transparent", 
+                                    border_width=2, border_color=PRIMARY_PURPLE, hover_color="#1A1A1A",
+                                    command=self.show_receive_ui)
         btn_receive.pack(pady=20)
 
-    def show_send_ui(self):
+    # --- SENDING WORKFLOW ---
+    # Page 1: Select Files
+    def show_select_files_ui(self):
         self.clear_main_frame()
+        self.update_navigation("select_files")
         
-        btn_select = ctk.CTkButton(self.main_frame, text="Choose Files", command=self.select_files)
-        btn_select.pack(pady=20)
+        lbl_title = ctk.CTkLabel(self.main_frame, text="STEP 1: Choose Files", font=("Arial", 20, "bold"))
+        lbl_title.pack(pady=(20, 10))
 
-        lbl_info = ctk.CTkLabel(self.main_frame, text="Selected Files:", font=("Arial", 14))
-        lbl_info.pack(pady=(0, 5))
+        btn_select = ctk.CTkButton(self.main_frame, text="+ Browse Files", 
+                                   fg_color="#222222", hover_color="#333333", command=self.select_files)
+        btn_select.pack(pady=10)
+
+        self.file_list_scroll = ctk.CTkScrollableFrame(self.main_frame, fg_color="#111111")
+        self.file_list_scroll.pack(fill="both", expand=True, padx=30, pady=10)
         
-        self.file_list_scroll = ctk.CTkScrollableFrame(self.main_frame, height=100)
-        self.file_list_scroll.pack(fill="x", padx=20)
+        self.btn_next = ctk.CTkButton(self.main_frame, text="Next: Select Device →", height=40,
+                                      fg_color=PRIMARY_PURPLE, hover_color=HOVER_PURPLE, 
+                                      state="disabled", command=self.show_select_device_ui)
+        self.btn_next.pack(pady=20, padx=30, fill="x")
 
-        btn_scan = ctk.CTkButton(self.main_frame, text="Scan Network", command=self.scan_network)
-        btn_scan.pack(pady=20)
-
-        lbl_dev = ctk.CTkLabel(self.main_frame, text="Available Devices:", font=("Arial", 14))
-        lbl_dev.pack(pady=(0, 5))
-
-        self.device_list_frame = ctk.CTkScrollableFrame(self.main_frame)
-        self.device_list_frame.pack(fill="both", expand=True, padx=20, pady=(0, 20))
-        
-        btn_back = ctk.CTkButton(self.main_frame, text="Back", fg_color="transparent", border_width=1, command=self.show_menu)
-        btn_back.pack(pady=10)
+        # Repopulate if files were already selected (going back from device screen)
+        self.refresh_file_list_ui()
 
     def select_files(self):
         files = filedialog.askopenfilenames()
         if files:
-            self.selected_files = files
-            for widget in self.file_list_scroll.winfo_children():
-                widget.destroy()
-            for f in files:
-                l = ctk.CTkLabel(self.file_list_scroll, text=os.path.basename(f))
-                l.pack(anchor="w")
+            self.selected_files = list(files)
+            self.refresh_file_list_ui()
 
+    def refresh_file_list_ui(self):
+        for widget in self.file_list_scroll.winfo_children():
+            widget.destroy()
+            
+        if self.selected_files:
+            self.btn_next.configure(state="normal")
+            for f in self.selected_files:
+                filename = os.path.basename(f)
+                filesize = os.path.getsize(f) / (1024 * 1024)
+                lbl = ctk.CTkLabel(self.file_list_scroll, text=f"📄 {filename} ({filesize:.2f} MB)", font=("Arial", 14))
+                lbl.pack(anchor="w", pady=2)
+        else:
+            self.btn_next.configure(state="disabled")
+
+    # Page 2: Select Device
+    def show_select_device_ui(self):
+        self.clear_main_frame()
+        self.update_navigation("select_device")
+        
+        lbl_title = ctk.CTkLabel(self.main_frame, text="STEP 2: Select Destination", font=("Arial", 20, "bold"))
+        lbl_title.pack(pady=(20, 10))
+
+        btn_scan = ctk.CTkButton(self.main_frame, text="↻ Refresh Network Scan", 
+                                 fg_color="#222222", hover_color="#333333", command=self.scan_network)
+        btn_scan.pack(pady=10)
+
+        self.device_list_frame = ctk.CTkScrollableFrame(self.main_frame, fg_color="#111111")
+        self.device_list_frame.pack(fill="both", expand=True, padx=30, pady=10)
+        
+        self.scan_network()
+
+    # Page 3: Sending Progress
+    def show_sending_progress_ui(self, target_ip, target_name):
+        self.clear_main_frame()
+        self.update_navigation("sending")
+        
+        lbl_title = ctk.CTkLabel(self.main_frame, text=f"Sending to {target_name}...", font=("Arial", 20, "bold"))
+        lbl_title.pack(pady=(20, 10))
+
+        # Overall Progress
+        self.lbl_overall = ctk.CTkLabel(self.main_frame, text="Total Progress: 0%", font=("Arial", 14), text_color=MUTED_TEXT)
+        self.lbl_overall.pack(pady=(10, 0))
+        
+        self.overall_progress_bar = ctk.CTkProgressBar(self.main_frame, width=400, height=10, 
+                                                       progress_color=PRIMARY_PURPLE, fg_color="#222222")
+        self.overall_progress_bar.set(0)
+        self.overall_progress_bar.pack(pady=10)
+
+        # Individual Files Frame
+        self.progress_scroll = ctk.CTkScrollableFrame(self.main_frame, fg_color="#111111")
+        self.progress_scroll.pack(fill="both", expand=True, padx=30, pady=20)
+
+        self.file_progress_widgets = {} # Stores canvas widgets by filepath
+
+        for f in self.selected_files:
+            row_frame = ctk.CTkFrame(self.progress_scroll, fg_color="transparent")
+            row_frame.pack(fill="x", pady=5)
+            
+            filename = os.path.basename(f)
+            lbl = ctk.CTkLabel(row_frame, text=filename, font=("Arial", 14))
+            lbl.pack(side="left", padx=10)
+            
+            circ_prog = CircularProgress(row_frame, size=24, bg_color="#111111")
+            circ_prog.pack(side="right", padx=10)
+            self.file_progress_widgets[f] = circ_prog
+
+        # Start thread
+        threading.Thread(target=self.process_send_files, args=(target_ip,), daemon=True).start()
+
+    # --- SENDING LOGIC (THREADED) ---
+    def process_send_files(self, target_ip):
+        try:
+            total_bytes_to_send = sum(os.path.getsize(f) for f in self.selected_files)
+            total_bytes_sent = 0
+
+            for filepath in self.selected_files:
+                filesize = os.path.getsize(filepath)
+                filename = os.path.basename(filepath)
+                
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s.connect((target_ip, TCP_PORT))
+                s.send(f"{filename}{SEPARATOR}{filesize}\n".encode())
+                
+                file_bytes_sent = 0
+                circ_widget = self.file_progress_widgets[filepath]
+
+                with open(filepath, "rb") as f:
+                    while True:
+                        bytes_read = f.read(BUFFER_SIZE)
+                        if not bytes_read: break
+                        s.sendall(bytes_read)
+                        
+                        file_bytes_sent += len(bytes_read)
+                        total_bytes_sent += len(bytes_read)
+                        
+                        # Calculate progress
+                        file_prog = file_bytes_sent / filesize
+                        overall_prog = total_bytes_sent / total_bytes_to_send
+                        
+                        # Safely update UI
+                        self.after(0, circ_widget.set, file_prog)
+                        self.after(0, self.overall_progress_bar.set, overall_prog)
+                        self.after(0, self.lbl_overall.configure, text=f"Total Progress: {int(overall_prog*100)}%")
+
+                s.close()
+                self.after(0, circ_widget.set, 1.0) # Ensure it shows 100%
+
+            # Finished
+            self.after(0, self.show_success_and_return)
+
+        except Exception as e:
+            self.after(0, lambda: messagebox.showerror("Transfer Error", str(e)))
+            self.after(0, self.show_menu)
+
+    def show_success_and_return(self):
+        messagebox.showinfo("Success", "All files sent successfully!")
+        self.selected_files = [] # Clear queue
+        self.show_menu()
+
+    # --- RECEIVING WORKFLOW ---
     def show_receive_ui(self):
         self.clear_main_frame()
+        self.update_navigation("receive")
         self.server_running = True
         
-        lbl = ctk.CTkLabel(self.main_frame, text="Ready to Receive", font=("Arial", 20, "bold"))
-        lbl.pack(pady=(30, 10))
-        
-        lbl_sub = ctk.CTkLabel(self.main_frame, text=f"Visible as: {self.username}\nIP: {self.my_ip}", text_color="gray")
-        lbl_sub.pack(pady=5)
+        lbl_anim = ctk.CTkLabel(self.main_frame, text="📡", font=("Arial", 40))
+        lbl_anim.pack(pady=(20, 0))
 
-        self.progress_bar = ctk.CTkProgressBar(self.main_frame, width=400)
-        self.progress_bar.set(0)
-        self.progress_bar.pack(pady=20)
+        lbl = ctk.CTkLabel(self.main_frame, text="Awaiting Transmissions...", font=("Arial", 20, "bold"), text_color=PRIMARY_PURPLE)
+        lbl.pack(pady=(5, 10))
         
-        self.lbl_status = ctk.CTkLabel(self.main_frame, text="Waiting...", font=("Arial", 14))
+        # Display all local IPs nicely
+        ips = [ip for ip in self.get_all_interfaces() if not ip.startswith("127.")]
+        if not ips: ips = ["127.0.0.1 (Local Only)"]
+        ip_display = "\n".join([f"• {ip}" for ip in ips])
+
+        lbl_sub = ctk.CTkLabel(self.main_frame, text=f"Visible as: {self.username}\n\nYour IP Addresses:\n{ip_display}", 
+                               text_color=MUTED_TEXT, justify="center")
+        lbl_sub.pack(pady=10)
+
+        self.receive_progress = ctk.CTkProgressBar(self.main_frame, width=400, height=10, 
+                                                   progress_color=PRIMARY_PURPLE, fg_color="#222222")
+        self.receive_progress.set(0)
+        self.receive_progress.pack(pady=20)
+        
+        self.lbl_status = ctk.CTkLabel(self.main_frame, text="Standing by...", font=("Arial", 14))
         self.lbl_status.pack()
 
-        self.log_box = ctk.CTkTextbox(self.main_frame, height=150)
-        self.log_box.pack(fill="both", expand=True, padx=20, pady=20)
-        
-        btn_back = ctk.CTkButton(self.main_frame, text="Stop & Back", fg_color="#C0392B", hover_color="#922B21", command=self.show_menu)
-        btn_back.pack(pady=10)
+        self.log_box = ctk.CTkTextbox(self.main_frame, height=150, fg_color="#111111", text_color=MUTED_TEXT)
+        self.log_box.pack(fill="both", expand=True, padx=30, pady=20)
         
         threading.Thread(target=self.udp_broadcaster, daemon=True).start()
         threading.Thread(target=self.tcp_server, daemon=True).start()
+
+    # --- NETWORK DISCOVERY METHODS ---
+    def scan_network(self):
+        self.peers = {}
+        for w in self.device_list_frame.winfo_children(): w.destroy()
+        lbl_scanning = ctk.CTkLabel(self.device_list_frame, text="Scanning local network...", text_color=MUTED_TEXT)
+        lbl_scanning.pack(pady=10)
+        try:
+            msg = f"DISCOVER:{self.username}".encode()
+            threading.Thread(target=self.send_broadcast_packet, args=(msg,), daemon=True).start()
+        except Exception as e:
+            messagebox.showerror("Network Error", str(e))
 
     def udp_listener(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -208,52 +405,38 @@ class SeamlessApp(ctk.CTk):
                 time.sleep(2)
             except: break
 
-    def scan_network(self):
-        self.peers = {}
-        try:
-            msg = f"DISCOVER:{self.username}".encode()
-            threading.Thread(target=self.send_broadcast_packet, args=(msg,), daemon=True).start()
-        except Exception as e:
-            messagebox.showerror("Network Error", str(e))
-
     def update_peer_list(self):
         if hasattr(self, 'device_list_frame') and self.device_list_frame.winfo_exists():
             for w in self.device_list_frame.winfo_children(): w.destroy()
+            if not self.peers:
+                ctk.CTkLabel(self.device_list_frame, text="No devices found yet.", text_color=MUTED_TEXT).pack(pady=10)
             for ip, name in self.peers.items():
-                ctk.CTkButton(self.device_list_frame, text=f"{name} ({ip})", 
-                              command=lambda i=ip: self.send_files(i)).pack(pady=5, fill="x")
+                btn = ctk.CTkButton(self.device_list_frame, text=f"💻 {name}\n{ip}", height=60,
+                                    fg_color="#1A1A1A", hover_color="#2A2A2A", border_width=1, border_color="#333",
+                                    command=lambda i=ip, n=name: self.show_sending_progress_ui(i, n))
+                btn.pack(pady=5, fill="x", padx=10)
 
-    def send_files(self, target_ip):
-        if not self.selected_files: return
-        try:
-            for filepath in self.selected_files:
-                filesize = os.path.getsize(filepath)
-                filename = os.path.basename(filepath)
-                
-                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                s.connect((target_ip, TCP_PORT))
-                s.send(f"{filename}{SEPARATOR}{filesize}\n".encode())
-                
-                with open(filepath, "rb") as f:
-                    while True:
-                        bytes_read = f.read(BUFFER_SIZE)
-                        if not bytes_read: break
-                        s.sendall(bytes_read)
-                s.close()
-            messagebox.showinfo("Success", "Files sent!")
-            self.show_menu()
-        except Exception as e:
-            messagebox.showerror("Error", str(e))
-
+    # --- RECEIVING LOGIC ---
     def tcp_server(self):
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server_socket.bind(("0.0.0.0", TCP_PORT))
-        server_socket.listen(5)
+        server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        try:
+            server_socket.bind(("0.0.0.0", TCP_PORT))
+            server_socket.listen(5)
+            server_socket.settimeout(1.0) # Allow checking for server_running flag periodically
+        except Exception as e:
+            print(f"TCP Bind Error: {e}")
+            return
+
         while self.server_running:
             try:
                 client, _ = server_socket.accept()
-                threading.Thread(target=self.handle_incoming_file, args=(client,)).start()
-            except: break
+                threading.Thread(target=self.handle_incoming_file, args=(client,), daemon=True).start()
+            except socket.timeout:
+                continue # Normal timeout, loop checks self.server_running again
+            except Exception as e:
+                break
+        server_socket.close()
 
     def handle_incoming_file(self, client_socket):
         try:
@@ -267,8 +450,8 @@ class SeamlessApp(ctk.CTk):
             filename, filesize = header.split(SEPARATOR)
             filesize = int(filesize)
             
-            self.log_box.insert("end", f"Start: {filename} ({filesize/1024/1024:.2f} MB)\n")
-            self.progress_bar.set(0)
+            self.after(0, self.log_box.insert, "end", f"↓ Incoming: {filename} ({(filesize/1024/1024):.2f} MB)\n")
+            self.after(0, self.receive_progress.set, 0)
             
             downloads_path = Path.home() / "Downloads"
             downloads_path.mkdir(parents=True, exist_ok=True)
@@ -283,16 +466,14 @@ class SeamlessApp(ctk.CTk):
                     received_total += len(bytes_read)
                     
                     progress = received_total / filesize
-                    self.progress_bar.set(progress)
-                    self.lbl_status.configure(text=f"Receiving: {int(progress*100)}%")
-                    self.update_idletasks()
+                    self.after(0, self.receive_progress.set, progress)
+                    self.after(0, self.lbl_status.configure, text=f"Receiving {filename}: {int(progress*100)}%")
 
-            self.log_box.insert("end", f"Saved to Downloads: {filename}\n")
-            self.lbl_status.configure(text="Transfer Complete")
+            self.after(0, self.log_box.insert, "end", f"✓ Saved: {filename}\n")
+            self.after(0, self.lbl_status.configure, text="Transfer Complete")
             client_socket.close()
         except Exception as e:
-            print(f"Error: {e}")
-            self.log_box.insert("end", f"Error: {e}\n")
+            self.after(0, self.log_box.insert, "end", f"⚠ Error: {e}\n")
 
 if __name__ == "__main__":
     app = SeamlessApp()
