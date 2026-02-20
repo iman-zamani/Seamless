@@ -39,27 +39,28 @@ ctk.set_appearance_mode("Dark")
 
 class CircularProgress(ctk.CTkCanvas):
     """Custom circular progress bar for individual file tracking."""
-    def __init__(self, parent, size=24, bg_color=FRAME_COLOR, **kwargs):
+    def __init__(self, parent, size=26, bg_color=FRAME_COLOR, **kwargs):
         super().__init__(parent, width=size, height=size, bg=bg_color, highlightthickness=0, **kwargs)
         self.size = size
         self.set(0)
 
     def set(self, progress):
         self.delete("all")
+        pad = 2
         if progress >= 1.0:
             # Draw a full outer ring
-            self.create_oval(2, 2, self.size-2, self.size-2, outline=HOVER_PURPLE, width=3)
+            self.create_oval(pad, pad, self.size-pad, self.size-pad, outline=HOVER_PURPLE, width=3)
             # Draw a checkmark inside
             scale = self.size / 24.0
             self.create_line(6*scale, 12*scale, 10*scale, 16*scale, fill=HOVER_PURPLE, width=3, capstyle="round", joinstyle="round")
             self.create_line(10*scale, 16*scale, 18*scale, 8*scale, fill=HOVER_PURPLE, width=3, capstyle="round", joinstyle="round")
         else:
             # Dark background ring
-            self.create_oval(2, 2, self.size-2, self.size-2, outline="#222222", width=3)
+            self.create_oval(pad, pad, self.size-pad, self.size-pad, outline="#222222", width=3)
             # Bright purple progress ring
             angle = int(360 * progress)
             if angle > 0:
-                self.create_arc(2, 2, self.size-2, self.size-2, start=90, extent=-angle, 
+                self.create_arc(pad, pad, self.size-pad, self.size-pad, start=90, extent=-angle, 
                                 outline=HOVER_PURPLE, width=3, style="arc")
 
 
@@ -75,6 +76,7 @@ class SeamlessApp(ctk.CTk):
         self.selected_files = []
         self.server_running = False
         self.current_state = "menu" # Tracks where the back button should go
+        self.cancel_transfer = False # Flag for mid-transfer cancellation
 
         # --- HEADER & NAVIGATION ---
         self.header_frame = ctk.CTkFrame(self, fg_color="transparent")
@@ -84,7 +86,6 @@ class SeamlessApp(ctk.CTk):
                                       fg_color="transparent", hover_color="#1A1A1A",
                                       text_color=MUTED_TEXT, font=("Arial", 14, "bold"),
                                       command=self.handle_back_button)
-        # Initially hidden on the main menu
         self.btn_back.pack(side="left")
         self.btn_back.pack_forget() 
 
@@ -154,19 +155,22 @@ class SeamlessApp(ctk.CTk):
     def handle_back_button(self):
         if self.current_state == "select_device":
             self.show_select_files_ui()
+        elif self.current_state == "sending":
+            self.confirm_cancel()
         else:
             self.show_menu()
 
     def update_navigation(self, state):
         self.current_state = state
-        if state == "menu" or state == "sending":
-            self.btn_back.pack_forget() # Hide back button on main menu or while actively sending
+        if state == "menu":
+            self.btn_back.pack_forget() # Hide back button on main menu
         else:
-            self.btn_back.pack(side="left", before=self.lbl_title)
+            self.btn_back.pack(side="left", before=self.lbl_title) # Show on all other pages
 
     def show_menu(self):
         self.clear_main_frame()
         self.server_running = False
+        self.cancel_transfer = False
         self.update_navigation("menu")
         
         lbl_welcome = ctk.CTkLabel(self.main_frame, text="What would you like to do?", font=("Arial", 18))
@@ -204,7 +208,6 @@ class SeamlessApp(ctk.CTk):
                                       state="disabled", command=self.show_select_device_ui)
         self.btn_next.pack(pady=20, padx=30, fill="x")
 
-        # Repopulate if files were already selected (going back from device screen)
         self.refresh_file_list_ui()
 
     def select_files(self):
@@ -248,13 +251,14 @@ class SeamlessApp(ctk.CTk):
     def show_sending_progress_ui(self, target_ip, target_name):
         self.clear_main_frame()
         self.update_navigation("sending")
+        self.cancel_transfer = False # Reset flag when entering page
         
         lbl_title = ctk.CTkLabel(self.main_frame, text=f"Sending to {target_name}...", font=("Arial", 20, "bold"))
         lbl_title.pack(pady=(20, 10))
 
         # Overall Progress
         self.lbl_overall = ctk.CTkLabel(self.main_frame, text="Total Progress: 0%", font=("Arial", 14), text_color=MUTED_TEXT)
-        self.lbl_overall.pack(pady=(10, 0))
+        self.lbl_overall.pack(pady=(5, 0))
         
         self.overall_progress_bar = ctk.CTkProgressBar(self.main_frame, width=400, height=10, 
                                                        progress_color=PRIMARY_PURPLE, fg_color="#222222")
@@ -263,26 +267,43 @@ class SeamlessApp(ctk.CTk):
 
         # Individual Files Frame
         self.progress_scroll = ctk.CTkScrollableFrame(self.main_frame, fg_color="#111111")
-        self.progress_scroll.pack(fill="both", expand=True, padx=30, pady=20)
+        self.progress_scroll.pack(fill="both", expand=True, padx=30, pady=10)
 
-        self.file_progress_widgets = {} # Stores canvas widgets by filepath
+        self.file_progress_widgets = {}
 
         for f in self.selected_files:
             row_frame = ctk.CTkFrame(self.progress_scroll, fg_color="transparent")
             row_frame.pack(fill="x", pady=5)
             
-            # Progress bar packed first (left)
-            circ_prog = CircularProgress(row_frame, size=24, bg_color="#111111")
-            circ_prog.pack(side="left", padx=(10, 5))
+            # Use Grid geometry manager to strictly isolate UI elements into uncrossable columns
+            row_frame.grid_columnconfigure(0, weight=0, minsize=40) # Locks the circle's cell width
+            row_frame.grid_columnconfigure(1, weight=1) # Allows the text to take remaining space
+            
+            # Column 0: Circular Progress Bar
+            circ_prog = CircularProgress(row_frame, size=26, bg_color="#111111")
+            circ_prog.grid(row=0, column=0, padx=(5, 5), sticky="w")
             self.file_progress_widgets[f] = circ_prog
 
-            # Filename packed second
+            # Column 1: Filename text
             filename = os.path.basename(f)
-            lbl = ctk.CTkLabel(row_frame, text=filename, font=("Arial", 14))
-            lbl.pack(side="left", padx=(0, 10))
+            lbl = ctk.CTkLabel(row_frame, text=filename, font=("Arial", 14), anchor="w", justify="left")
+            lbl.grid(row=0, column=1, padx=(0, 10), sticky="w")
+
+        # Cancel Button
+        self.btn_cancel = ctk.CTkButton(self.main_frame, text="Cancel Transfer", fg_color="#C0392B", 
+                                        hover_color="#922B21", font=("Arial", 14, "bold"), 
+                                        command=self.confirm_cancel)
+        self.btn_cancel.pack(pady=(10, 20))
             
         # Start thread
         threading.Thread(target=self.process_send_files, args=(target_ip,), daemon=True).start()
+
+    def confirm_cancel(self):
+        confirm = messagebox.askyesno("Cancel Transfer", 
+                                      "Are you sure you want to abort?\nPartial files may remain on the receiver's device.")
+        if confirm:
+            self.cancel_transfer = True
+            self.btn_cancel.configure(state="disabled", text="Cancelling...")
 
     # --- SENDING LOGIC (THREADED) ---
     def process_send_files(self, target_ip):
@@ -291,6 +312,9 @@ class SeamlessApp(ctk.CTk):
             total_bytes_sent = 0
 
             for filepath in self.selected_files:
+                if self.cancel_transfer:
+                    break
+                
                 filesize = os.path.getsize(filepath)
                 filename = os.path.basename(filepath)
                 
@@ -303,6 +327,9 @@ class SeamlessApp(ctk.CTk):
 
                 with open(filepath, "rb") as f:
                     while True:
+                        if self.cancel_transfer:
+                            break
+                        
                         bytes_read = f.read(BUFFER_SIZE)
                         if not bytes_read: break
                         s.sendall(bytes_read)
@@ -310,7 +337,6 @@ class SeamlessApp(ctk.CTk):
                         file_bytes_sent += len(bytes_read)
                         total_bytes_sent += len(bytes_read)
                         
-                        # Calculate progress
                         file_prog = file_bytes_sent / filesize
                         overall_prog = total_bytes_sent / total_bytes_to_send
                         
@@ -320,10 +346,13 @@ class SeamlessApp(ctk.CTk):
                         self.after(0, self.lbl_overall.configure, text=f"Total Progress: {int(overall_prog*100)}%")
 
                 s.close()
-                self.after(0, circ_widget.set, 1.0) # Ensure it shows 100% and triggers the check mark
+                if not self.cancel_transfer:
+                    self.after(0, circ_widget.set, 1.0) # Trigger check mark only if completed
 
-            # Finished
-            self.after(0, self.show_success_and_return)
+            if self.cancel_transfer:
+                self.after(0, self.show_cancelled_and_return)
+            else:
+                self.after(0, self.show_success_and_return)
 
         except Exception as e:
             self.after(0, lambda: messagebox.showerror("Transfer Error", str(e)))
@@ -332,6 +361,11 @@ class SeamlessApp(ctk.CTk):
     def show_success_and_return(self):
         messagebox.showinfo("Success", "All files sent successfully!")
         self.selected_files = [] # Clear queue
+        self.show_menu()
+        
+    def show_cancelled_and_return(self):
+        messagebox.showinfo("Cancelled", "File transfer was aborted.")
+        self.selected_files = []
         self.show_menu()
 
     # --- RECEIVING WORKFLOW ---
