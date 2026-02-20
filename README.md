@@ -103,7 +103,7 @@ xattr -d com.apple.quarantine /Applications/seamless.app
 Requires Python 3.8+.
 
 ```bash
-git clone [https://github.com/iman-zamani/seamless.git](https://github.com/iman-zamani/seamless.git)
+git clone https://github.com/iman-zamani/seamless.git
 cd seamless
 pip install customtkinter
 python seamless.py
@@ -127,4 +127,4 @@ Open the `Android/` directory in **Android Studio**. Sync Gradle files and run o
 
 ## License
 
-Licensed under the **GPL (General Public License)**. See `LICENSE` for details.
+This project is Licensed under the [GPL (General Public License)](./LICENSE).
