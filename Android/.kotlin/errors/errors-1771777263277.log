@@ -1,0 +1,484 @@
+kotlin version: 2.0.21
+error message: org.jetbrains.kotlin.backend.common.BackendException: Backend Internal error: Exception during IR lowering
+File being compiled: /Users/imanzamani/Desktop/Projects/Seamless/Android/app/src/main/java/com/example/seamless/MainActivity.kt
+The root cause java.lang.RuntimeException was thrown at: org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.generate(FunctionCodegen.kt:47)
+	at org.jetbrains.kotlin.backend.common.CodegenUtil.reportBackendException(CodegenUtil.kt:253)
+	at org.jetbrains.kotlin.backend.common.CodegenUtil.reportBackendException$default(CodegenUtil.kt:236)
+	at org.jetbrains.kotlin.backend.common.phaser.PerformByIrFilePhase.invokeSequential(performByIrFile.kt:65)
+	at org.jetbrains.kotlin.backend.common.phaser.PerformByIrFilePhase.invoke(performByIrFile.kt:52)
+	at org.jetbrains.kotlin.backend.common.phaser.PerformByIrFilePhase.invoke(performByIrFile.kt:38)
+	at org.jetbrains.kotlin.backend.common.phaser.NamedCompilerPhase.phaseBody(CompilerPhase.kt:166)
+	at org.jetbrains.kotlin.backend.common.phaser.AbstractNamedCompilerPhase.invoke(CompilerPhase.kt:113)
+	at org.jetbrains.kotlin.backend.common.phaser.CompositePhase.invoke(PhaseBuilders.kt:27)
+	at org.jetbrains.kotlin.backend.common.phaser.CompositePhase.invoke(PhaseBuilders.kt:14)
+	at org.jetbrains.kotlin.backend.common.phaser.NamedCompilerPhase.phaseBody(CompilerPhase.kt:166)
+	at org.jetbrains.kotlin.backend.common.phaser.AbstractNamedCompilerPhase.invoke(CompilerPhase.kt:113)
+	at org.jetbrains.kotlin.backend.common.phaser.CompilerPhaseKt.invokeToplevel(CompilerPhase.kt:62)
+	at org.jetbrains.kotlin.backend.jvm.JvmIrCodegenFactory.invokeCodegen(JvmIrCodegenFactory.kt:371)
+	at org.jetbrains.kotlin.codegen.CodegenFactory.generateModule(CodegenFactory.kt:47)
+	at org.jetbrains.kotlin.backend.jvm.JvmIrCodegenFactory.generateModuleInFrontendIRMode(JvmIrCodegenFactory.kt:433)
+	at org.jetbrains.kotlin.cli.jvm.compiler.pipeline.JvmCompilerPipelineKt.generateCodeFromIr(jvmCompilerPipeline.kt:246)
+	at org.jetbrains.kotlin.cli.jvm.compiler.pipeline.JvmCompilerPipelineKt.compileModulesUsingFrontendIrAndLightTree(jvmCompilerPipeline.kt:142)
+	at org.jetbrains.kotlin.cli.jvm.K2JVMCompiler.doExecute(K2JVMCompiler.kt:148)
+	at org.jetbrains.kotlin.cli.jvm.K2JVMCompiler.doExecute(K2JVMCompiler.kt:43)
+	at org.jetbrains.kotlin.cli.common.CLICompiler.execImpl(CLICompiler.kt:103)
+	at org.jetbrains.kotlin.cli.common.CLICompiler.execImpl(CLICompiler.kt:49)
+	at org.jetbrains.kotlin.cli.common.CLITool.exec(CLITool.kt:101)
+	at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.runCompiler(IncrementalJvmCompilerRunner.kt:464)
+	at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.runCompiler(IncrementalJvmCompilerRunner.kt:73)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.doCompile(IncrementalCompilerRunner.kt:506)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compileImpl(IncrementalCompilerRunner.kt:423)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compileNonIncrementally(IncrementalCompilerRunner.kt:301)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compile(IncrementalCompilerRunner.kt:129)
+	at org.jetbrains.kotlin.daemon.CompileServiceImplBase.execIncrementalCompiler(CompileServiceImpl.kt:675)
+	at org.jetbrains.kotlin.daemon.CompileServiceImplBase.access$execIncrementalCompiler(CompileServiceImpl.kt:92)
+	at org.jetbrains.kotlin.daemon.CompileServiceImpl.compile(CompileServiceImpl.kt:1660)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at java.rmi/sun.rmi.server.UnicastServerRef.dispatch(Unknown Source)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Unknown Source)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Unknown Source)
+	at java.base/java.security.AccessController.doPrivileged(Unknown Source)
+	at java.rmi/sun.rmi.transport.Transport.serviceCall(Unknown Source)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport.handleMessages(Unknown Source)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run0(Unknown Source)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.lambda$run$0(Unknown Source)
+	at java.base/java.security.AccessController.doPrivileged(Unknown Source)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.lang.RuntimeException: Exception while generating code for:
+FUN name:showSendingProgressUi visibility:private modality:FINAL <> ($this:com.example.seamless.MainActivity, targetIp:kotlin.String, targetName:kotlin.String) returnType:kotlin.Unit
+  $this: VALUE_PARAMETER name:<this> type:com.example.seamless.MainActivity
+  VALUE_PARAMETER name:targetIp index:0 type:kotlin.String
+  VALUE_PARAMETER name:targetName index:1 type:kotlin.String
+  BLOCK_BODY
+    CALL 'private final fun hideAllLayouts (): kotlin.Unit declared in com.example.seamless.MainActivity' type=kotlin.Unit origin=null
+      $this: GET_VAR '<this>: com.example.seamless.MainActivity declared in com.example.seamless.MainActivity.showSendingProgressUi' type=com.example.seamless.MainActivity origin=null
+    CALL 'private final fun updateNavigation (state: kotlin.String): kotlin.Unit declared in com.example.seamless.MainActivity' type=kotlin.Unit origin=null
+      $this: GET_VAR '<this>: com.example.seamless.MainActivity declared in com.example.seamless.MainActivity.showSendingProgressUi' type=com.example.seamless.MainActivity origin=null
+      state: CONST String type=kotlin.String value="sending"
+    SET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:cancelTransfer type:kotlin.Boolean visibility:private' type=kotlin.Unit origin=null
+      receiver: GET_VAR '<this>: com.example.seamless.MainActivity declared in com.example.seamless.MainActivity.showSendingProgressUi' type=com.example.seamless.MainActivity origin=null
+      value: CONST Boolean type=kotlin.Boolean value=false
+    CALL 'public open fun setVisibility (p0: kotlin.Int): kotlin.Unit [fake_override] declared in android.widget.LinearLayout' type=kotlin.Unit origin=EQ
+      $this: BLOCK type=android.widget.LinearLayout origin=FOLDED_ELVIS
+        WHEN type=android.widget.LinearLayout origin=FOLDED_ELVIS
+          BRANCH
+            if: COMPOSITE type=kotlin.Boolean origin=null
+              VAR IR_TEMPORARY_VARIABLE name:tmp0 type:android.widget.LinearLayout? [val]
+                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:step3Layout type:android.widget.LinearLayout? visibility:private' type=android.widget.LinearLayout? origin=null
+                  receiver: GET_VAR '<this>: com.example.seamless.MainActivity declared in com.example.seamless.MainActivity.showSendingProgressUi' type=com.example.seamless.MainActivity origin=null
+              CALL 'public final fun not (): kotlin.Boolean [operator] declared in kotlin.Boolean' type=kotlin.Boolean origin=null
+                $this: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+                  arg0: GET_VAR 'val tmp0: android.widget.LinearLayout? [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=android.widget.LinearLayout? origin=null
+                  arg1: CONST Null type=kotlin.Nothing? value=null
+            then: GET_VAR 'val tmp0: android.widget.LinearLayout? [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=android.widget.LinearLayout? origin=null
+          BRANCH
+            if: CONST Boolean type=kotlin.Boolean value=true
+            then: BLOCK type=kotlin.Unit origin=null
+              CALL 'public final fun throwUninitializedPropertyAccessException (propertyName: kotlin.String): kotlin.Unit declared in kotlin.jvm.internal.Intrinsics' type=kotlin.Unit origin=null
+                propertyName: CONST String type=kotlin.String value="step3Layout"
+      p0: CONST Int type=kotlin.Int value=0
+    CALL 'public final fun setText (p0: @[FlexibleNullability] kotlin.CharSequence?): kotlin.Unit declared in android.widget.TextView' type=kotlin.Unit origin=EQ
+      $this: BLOCK type=android.widget.TextView origin=FOLDED_ELVIS
+        WHEN type=android.widget.TextView origin=FOLDED_ELVIS
+          BRANCH
+            if: COMPOSITE type=kotlin.Boolean origin=null
+              VAR IR_TEMPORARY_VARIABLE name:tmp0 type:android.widget.TextView? [val]
+                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:tvSendingTarget type:android.widget.TextView? visibility:private' type=android.widget.TextView? origin=null
+                  receiver: GET_VAR '<this>: com.example.seamless.MainActivity declared in com.example.seamless.MainActivity.showSendingProgressUi' type=com.example.seamless.MainActivity origin=null
+              CALL 'public final fun not (): kotlin.Boolean [operator] declared in kotlin.Boolean' type=kotlin.Boolean origin=null
+                $this: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+                  arg0: GET_VAR 'val tmp0: android.widget.TextView? [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=android.widget.TextView? origin=null
+                  arg1: CONST Null type=kotlin.Nothing? value=null
+            then: GET_VAR 'val tmp0: android.widget.TextView? [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=android.widget.TextView? origin=null
+          BRANCH
+            if: CONST Boolean type=kotlin.Boolean value=true
+            then: BLOCK type=kotlin.Unit origin=null
+              CALL 'public final fun throwUninitializedPropertyAccessException (propertyName: kotlin.String): kotlin.Unit declared in kotlin.jvm.internal.Intrinsics' type=kotlin.Unit origin=null
+                propertyName: CONST String type=kotlin.String value="tvSendingTarget"
+      p0: STRING_CONCATENATION type=kotlin.String
+        CONST String type=kotlin.String value="Sending to "
+        GET_VAR 'targetName: kotlin.String declared in com.example.seamless.MainActivity.showSendingProgressUi' type=kotlin.String origin=null
+        CONST String type=kotlin.String value="..."
+    CALL 'public final fun setText (p0: @[FlexibleNullability] kotlin.CharSequence?): kotlin.Unit declared in android.widget.TextView' type=kotlin.Unit origin=EQ
+      $this: BLOCK type=android.widget.TextView origin=FOLDED_ELVIS
+        WHEN type=android.widget.TextView origin=FOLDED_ELVIS
+          BRANCH
+            if: COMPOSITE type=kotlin.Boolean origin=null
+              VAR IR_TEMPORARY_VARIABLE name:tmp0 type:android.widget.TextView? [val]
+                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:tvOverallProgress type:android.widget.TextView? visibility:private' type=android.widget.TextView? origin=null
+                  receiver: GET_VAR '<this>: com.example.seamless.MainActivity declared in com.example.seamless.MainActivity.showSendingProgressUi' type=com.example.seamless.MainActivity origin=null
+              CALL 'public final fun not (): kotlin.Boolean [operator] declared in kotlin.Boolean' type=kotlin.Boolean origin=null
+                $this: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+                  arg0: GET_VAR 'val tmp0: android.widget.TextView? [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=android.widget.TextView? origin=null
+                  arg1: CONST Null type=kotlin.Nothing? value=null
+            then: GET_VAR 'val tmp0: android.widget.TextView? [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=android.widget.TextView? origin=null
+          BRANCH
+            if: CONST Boolean type=kotlin.Boolean value=true
+            then: BLOCK type=kotlin.Unit origin=null
+              CALL 'public final fun throwUninitializedPropertyAccessException (propertyName: kotlin.String): kotlin.Unit declared in kotlin.jvm.internal.Intrinsics' type=kotlin.Unit origin=null
+                propertyName: CONST String type=kotlin.String value="tvOverallProgress"
+      p0: CONST String type=kotlin.String value="Total Progress: 0%"
+    CALL 'public open fun setProgress (p0: kotlin.Int): kotlin.Unit declared in android.widget.ProgressBar' type=kotlin.Unit origin=EQ
+      $this: BLOCK type=android.widget.ProgressBar origin=FOLDED_ELVIS
+        WHEN type=android.widget.ProgressBar origin=FOLDED_ELVIS
+          BRANCH
+            if: COMPOSITE type=kotlin.Boolean origin=null
+              VAR IR_TEMPORARY_VARIABLE name:tmp0 type:android.widget.ProgressBar? [val]
+                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:overallProgressBar type:android.widget.ProgressBar? visibility:private' type=android.widget.ProgressBar? origin=null
+                  receiver: GET_VAR '<this>: com.example.seamless.MainActivity declared in com.example.seamless.MainActivity.showSendingProgressUi' type=com.example.seamless.MainActivity origin=null
+              CALL 'public final fun not (): kotlin.Boolean [operator] declared in kotlin.Boolean' type=kotlin.Boolean origin=null
+                $this: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+                  arg0: GET_VAR 'val tmp0: android.widget.ProgressBar? [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=android.widget.ProgressBar? origin=null
+                  arg1: CONST Null type=kotlin.Nothing? value=null
+            then: GET_VAR 'val tmp0: android.widget.ProgressBar? [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=android.widget.ProgressBar? origin=null
+          BRANCH
+            if: CONST Boolean type=kotlin.Boolean value=true
+            then: BLOCK type=kotlin.Unit origin=null
+              CALL 'public final fun throwUninitializedPropertyAccessException (propertyName: kotlin.String): kotlin.Unit declared in kotlin.jvm.internal.Intrinsics' type=kotlin.Unit origin=null
+                propertyName: CONST String type=kotlin.String value="overallProgressBar"
+      p0: CONST Int type=kotlin.Int value=0
+    CALL 'public open fun setEnabled (p0: kotlin.Boolean): kotlin.Unit [fake_override] declared in android.widget.Button' type=kotlin.Unit origin=EQ
+      $this: BLOCK type=android.widget.Button origin=FOLDED_ELVIS
+        WHEN type=android.widget.Button origin=FOLDED_ELVIS
+          BRANCH
+            if: COMPOSITE type=kotlin.Boolean origin=null
+              VAR IR_TEMPORARY_VARIABLE name:tmp0 type:android.widget.Button? [val]
+                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:btnCancelTransfer type:android.widget.Button? visibility:private' type=android.widget.Button? origin=null
+                  receiver: GET_VAR '<this>: com.example.seamless.MainActivity declared in com.example.seamless.MainActivity.showSendingProgressUi' type=com.example.seamless.MainActivity origin=null
+              CALL 'public final fun not (): kotlin.Boolean [operator] declared in kotlin.Boolean' type=kotlin.Boolean origin=null
+                $this: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+                  arg0: GET_VAR 'val tmp0: android.widget.Button? [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=android.widget.Button? origin=null
+                  arg1: CONST Null type=kotlin.Nothing? value=null
+            then: GET_VAR 'val tmp0: android.widget.Button? [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=android.widget.Button? origin=null
+          BRANCH
+            if: CONST Boolean type=kotlin.Boolean value=true
+            then: BLOCK type=kotlin.Unit origin=null
+              CALL 'public final fun throwUninitializedPropertyAccessException (propertyName: kotlin.String): kotlin.Unit declared in kotlin.jvm.internal.Intrinsics' type=kotlin.Unit origin=null
+                propertyName: CONST String type=kotlin.String value="btnCancelTransfer"
+      p0: CONST Boolean type=kotlin.Boolean value=true
+    CALL 'public final fun setText (p0: @[FlexibleNullability] kotlin.CharSequence?): kotlin.Unit [fake_override] declared in android.widget.Button' type=kotlin.Unit origin=EQ
+      $this: BLOCK type=android.widget.Button origin=FOLDED_ELVIS
+        WHEN type=android.widget.Button origin=FOLDED_ELVIS
+          BRANCH
+            if: COMPOSITE type=kotlin.Boolean origin=null
+              VAR IR_TEMPORARY_VARIABLE name:tmp0 type:android.widget.Button? [val]
+                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:btnCancelTransfer type:android.widget.Button? visibility:private' type=android.widget.Button? origin=null
+                  receiver: GET_VAR '<this>: com.example.seamless.MainActivity declared in com.example.seamless.MainActivity.showSendingProgressUi' type=com.example.seamless.MainActivity origin=null
+              CALL 'public final fun not (): kotlin.Boolean [operator] declared in kotlin.Boolean' type=kotlin.Boolean origin=null
+                $this: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+                  arg0: GET_VAR 'val tmp0: android.widget.Button? [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=android.widget.Button? origin=null
+                  arg1: CONST Null type=kotlin.Nothing? value=null
+            then: GET_VAR 'val tmp0: android.widget.Button? [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=android.widget.Button? origin=null
+          BRANCH
+            if: CONST Boolean type=kotlin.Boolean value=true
+            then: BLOCK type=kotlin.Unit origin=null
+              CALL 'public final fun throwUninitializedPropertyAccessException (propertyName: kotlin.String): kotlin.Unit declared in kotlin.jvm.internal.Intrinsics' type=kotlin.Unit origin=null
+                propertyName: CONST String type=kotlin.String value="btnCancelTransfer"
+      p0: CONST String type=kotlin.String value="Cancel Transfer"
+    CALL 'public open fun removeAllViews (): kotlin.Unit [fake_override] declared in android.widget.LinearLayout' type=kotlin.Unit origin=null
+      $this: BLOCK type=android.widget.LinearLayout origin=FOLDED_ELVIS
+        WHEN type=android.widget.LinearLayout origin=FOLDED_ELVIS
+          BRANCH
+            if: COMPOSITE type=kotlin.Boolean origin=null
+              VAR IR_TEMPORARY_VARIABLE name:tmp0 type:android.widget.LinearLayout? [val]
+                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:sendingFilesContainer type:android.widget.LinearLayout? visibility:private' type=android.widget.LinearLayout? origin=null
+                  receiver: GET_VAR '<this>: com.example.seamless.MainActivity declared in com.example.seamless.MainActivity.showSendingProgressUi' type=com.example.seamless.MainActivity origin=null
+              CALL 'public final fun not (): kotlin.Boolean [operator] declared in kotlin.Boolean' type=kotlin.Boolean origin=null
+                $this: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+                  arg0: GET_VAR 'val tmp0: android.widget.LinearLayout? [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=android.widget.LinearLayout? origin=null
+                  arg1: CONST Null type=kotlin.Nothing? value=null
+            then: GET_VAR 'val tmp0: android.widget.LinearLayout? [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=android.widget.LinearLayout? origin=null
+          BRANCH
+            if: CONST Boolean type=kotlin.Boolean value=true
+            then: BLOCK type=kotlin.Unit origin=null
+              CALL 'public final fun throwUninitializedPropertyAccessException (propertyName: kotlin.String): kotlin.Unit declared in kotlin.jvm.internal.Intrinsics' type=kotlin.Unit origin=null
+                propertyName: CONST String type=kotlin.String value="sendingFilesContainer"
+    CALL 'public abstract fun clear (): kotlin.Unit declared in kotlin.collections.MutableMap' type=kotlin.Unit origin=null
+      $this: GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:fileRowUIs type:kotlin.collections.MutableMap<android.net.Uri, com.example.seamless.MainActivity.FileRowUI> visibility:private [final]' type=kotlin.collections.MutableMap<android.net.Uri, com.example.seamless.MainActivity.FileRowUI> origin=null
+        receiver: GET_VAR '<this>: com.example.seamless.MainActivity declared in com.example.seamless.MainActivity.showSendingProgressUi' type=com.example.seamless.MainActivity origin=null
+    BLOCK type=kotlin.Unit origin=FOR_LOOP
+      VAR FOR_LOOP_ITERATOR name:<iterator> type:kotlin.collections.Iterator<@[JvmSuppressWildcards(suppress = <null>)] android.net.Uri> [val]
+        CALL 'public abstract fun iterator (): kotlin.collections.Iterator<E of kotlin.collections.List> [operator] declared in kotlin.collections.List' type=kotlin.collections.Iterator<@[JvmSuppressWildcards(suppress = <null>)] android.net.Uri> origin=FOR_LOOP_ITERATOR
+          $this: GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:selectedFileUris type:kotlin.collections.List<android.net.Uri> visibility:private' type=kotlin.collections.List<android.net.Uri> origin=null
+            receiver: GET_VAR '<this>: com.example.seamless.MainActivity declared in com.example.seamless.MainActivity.showSendingProgressUi' type=com.example.seamless.MainActivity origin=null
+      WHILE label=MainActivity$showSendingProgressUi3 origin=FOR_LOOP_INNER_WHILE
+        condition: CALL 'public abstract fun hasNext (): kotlin.Boolean [operator] declared in kotlin.collections.Iterator' type=kotlin.Boolean origin=FOR_LOOP_HAS_NEXT
+          $this: GET_VAR 'val <iterator>: kotlin.collections.Iterator<@[JvmSuppressWildcards(suppress = <null>)] android.net.Uri> [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=kotlin.collections.Iterator<@[JvmSuppressWildcards(suppress = <null>)] android.net.Uri> origin=null
+        body: BLOCK type=kotlin.Unit origin=FOR_LOOP_INNER_WHILE
+          VAR FOR_LOOP_VARIABLE name:uri type:@[JvmSuppressWildcards(suppress = <null>)] android.net.Uri [val]
+            CALL 'public abstract fun next (): T of kotlin.collections.Iterator [operator] declared in kotlin.collections.Iterator' type=@[JvmSuppressWildcards(suppress = <null>)] android.net.Uri origin=FOR_LOOP_NEXT
+              $this: GET_VAR 'val <iterator>: kotlin.collections.Iterator<@[JvmSuppressWildcards(suppress = <null>)] android.net.Uri> [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=kotlin.collections.Iterator<@[JvmSuppressWildcards(suppress = <null>)] android.net.Uri> origin=null
+          BLOCK type=kotlin.Unit origin=null
+            VAR name:filename type:kotlin.String [val]
+              CALL 'public final fun <get-first> (): A of kotlin.Pair declared in kotlin.Pair' type=kotlin.String origin=GET_PROPERTY
+                $this: CALL 'private final fun getFileDetails (uri: android.net.Uri): kotlin.Pair<kotlin.String, kotlin.Long> declared in com.example.seamless.MainActivity' type=kotlin.Pair<kotlin.String, kotlin.Long> origin=null
+                  $this: GET_VAR '<this>: com.example.seamless.MainActivity declared in com.example.seamless.MainActivity.showSendingProgressUi' type=com.example.seamless.MainActivity origin=null
+                  uri: GET_VAR 'val uri: @[JvmSuppressWildcards(suppress = <null>)] android.net.Uri [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=@[JvmSuppressWildcards(suppress = <null>)] android.net.Uri origin=null
+            VAR name:row type:android.widget.LinearLayout [val]
+              CALL 'public final fun apply <T> (block: @[ExtensionFunctionType] kotlin.Function1<T of kotlin.StandardKt.apply, kotlin.Unit>): T of kotlin.StandardKt.apply [inline] declared in kotlin.StandardKt' type=android.widget.LinearLayout origin=null
+                <T>: android.widget.LinearLayout
+                $receiver: CONSTRUCTOR_CALL 'public constructor <init> (p0: @[FlexibleNullability] android.content.Context?) declared in android.widget.LinearLayout' type=android.widget.LinearLayout origin=null
+                  p0: GET_VAR '<this>: com.example.seamless.MainActivity declared in com.example.seamless.MainActivity.showSendingProgressUi' type=com.example.seamless.MainActivity origin=null
+                block: BLOCK type=@[ExtensionFunctionType] kotlin.Function1<android.widget.LinearLayout, kotlin.Unit> origin=LAMBDA
+                  COMPOSITE type=kotlin.Unit origin=null
+                  FUNCTION_REFERENCE 'private final fun showSendingProgressUi$lambda$16 (): kotlin.Unit declared in com.example.seamless.MainActivity' type=@[ExtensionFunctionType] kotlin.Function1<android.widget.LinearLayout, kotlin.Unit> origin=INLINE_LAMBDA reflectionTarget=null
+            VAR name:circProgress type:com.google.android.material.progressindicator.CircularProgressIndicator [val]
+              CALL 'public final fun apply <T> (block: @[ExtensionFunctionType] kotlin.Function1<T of kotlin.StandardKt.apply, kotlin.Unit>): T of kotlin.StandardKt.apply [inline] declared in kotlin.StandardKt' type=com.google.android.material.progressindicator.CircularProgressIndicator origin=null
+                <T>: com.google.android.material.progressindicator.CircularProgressIndicator
+                $receiver: CONSTRUCTOR_CALL 'public constructor <init> (p0: @[EnhancedNullability] android.content.Context) declared in com.google.android.material.progressindicator.CircularProgressIndicator' type=com.google.android.material.progressindicator.CircularProgressIndicator origin=null
+                  p0: GET_VAR '<this>: com.example.seamless.MainActivity declared in com.example.seamless.MainActivity.showSendingProgressUi' type=com.example.seamless.MainActivity origin=null
+                block: BLOCK type=@[ExtensionFunctionType] kotlin.Function1<com.google.android.material.progressindicator.CircularProgressIndicator, kotlin.Unit> origin=LAMBDA
+                  COMPOSITE type=kotlin.Unit origin=null
+                  FUNCTION_REFERENCE 'private final fun showSendingProgressUi$lambda$17 (): kotlin.Unit declared in com.example.seamless.MainActivity' type=@[ExtensionFunctionType] kotlin.Function1<com.google.android.material.progressindicator.CircularProgressIndicator, kotlin.Unit> origin=INLINE_LAMBDA reflectionTarget=null
+            CALL 'public open fun addView (p0: @[FlexibleNullability] android.view.View?): kotlin.Unit [fake_override] declared in android.widget.LinearLayout' type=kotlin.Unit origin=null
+              $this: GET_VAR 'val row: android.widget.LinearLayout [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=android.widget.LinearLayout origin=null
+              p0: GET_VAR 'val circProgress: com.google.android.material.progressindicator.CircularProgressIndicator [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=com.google.android.material.progressindicator.CircularProgressIndicator origin=null
+            VAR name:checkmark type:android.widget.TextView [val]
+              CALL 'public final fun apply <T> (block: @[ExtensionFunctionType] kotlin.Function1<T of kotlin.StandardKt.apply, kotlin.Unit>): T of kotlin.StandardKt.apply [inline] declared in kotlin.StandardKt' type=android.widget.TextView origin=null
+                <T>: android.widget.TextView
+                $receiver: CONSTRUCTOR_CALL 'public constructor <init> (p0: @[FlexibleNullability] android.content.Context?) declared in android.widget.TextView' type=android.widget.TextView origin=null
+                  p0: GET_VAR '<this>: com.example.seamless.MainActivity declared in com.example.seamless.MainActivity.showSendingProgressUi' type=com.example.seamless.MainActivity origin=null
+                block: BLOCK type=@[ExtensionFunctionType] kotlin.Function1<android.widget.TextView, kotlin.Unit> origin=LAMBDA
+                  COMPOSITE type=kotlin.Unit origin=null
+                  FUNCTION_REFERENCE 'private final fun showSendingProgressUi$lambda$18 (): kotlin.Unit declared in com.example.seamless.MainActivity' type=@[ExtensionFunctionType] kotlin.Function1<android.widget.TextView, kotlin.Unit> origin=INLINE_LAMBDA reflectionTarget=null
+            CALL 'public open fun addView (p0: @[FlexibleNullability] android.view.View?): kotlin.Unit [fake_override] declared in android.widget.LinearLayout' type=kotlin.Unit origin=null
+              $this: GET_VAR 'val row: android.widget.LinearLayout [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=android.widget.LinearLayout origin=null
+              p0: GET_VAR 'val checkmark: android.widget.TextView [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=android.widget.TextView origin=null
+            VAR name:nameText type:android.widget.TextView [val]
+              CALL 'public final fun apply <T> (block: @[ExtensionFunctionType] kotlin.Function1<T of kotlin.StandardKt.apply, kotlin.Unit>): T of kotlin.StandardKt.apply [inline] declared in kotlin.StandardKt' type=android.widget.TextView origin=null
+                <T>: android.widget.TextView
+                $receiver: CONSTRUCTOR_CALL 'public constructor <init> (p0: @[FlexibleNullability] android.content.Context?) declared in android.widget.TextView' type=android.widget.TextView origin=null
+                  p0: GET_VAR '<this>: com.example.seamless.MainActivity declared in com.example.seamless.MainActivity.showSendingProgressUi' type=com.example.seamless.MainActivity origin=null
+                block: BLOCK type=@[ExtensionFunctionType] kotlin.Function1<android.widget.TextView, kotlin.Unit> origin=LAMBDA
+                  COMPOSITE type=kotlin.Unit origin=null
+                  FUNCTION_REFERENCE 'private final fun showSendingProgressUi$lambda$19 ($filename: kotlin.String): kotlin.Unit declared in com.example.seamless.MainActivity' type=@[ExtensionFunctionType] kotlin.Function1<android.widget.TextView, kotlin.Unit> origin=INLINE_LAMBDA reflectionTarget=null
+                    $filename: GET_VAR 'val filename: kotlin.String [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=kotlin.String origin=null
+            CALL 'public open fun addView (p0: @[FlexibleNullability] android.view.View?): kotlin.Unit [fake_override] declared in android.widget.LinearLayout' type=kotlin.Unit origin=null
+              $this: GET_VAR 'val row: android.widget.LinearLayout [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=android.widget.LinearLayout origin=null
+              p0: GET_VAR 'val nameText: android.widget.TextView [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=android.widget.TextView origin=null
+            CALL 'public open fun addView (p0: @[FlexibleNullability] android.view.View?): kotlin.Unit [fake_override] declared in android.widget.LinearLayout' type=kotlin.Unit origin=null
+              $this: BLOCK type=android.widget.LinearLayout origin=FOLDED_ELVIS
+                WHEN type=android.widget.LinearLayout origin=FOLDED_ELVIS
+                  BRANCH
+                    if: COMPOSITE type=kotlin.Boolean origin=null
+                      VAR IR_TEMPORARY_VARIABLE name:tmp0 type:android.widget.LinearLayout? [val]
+                        GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:sendingFilesContainer type:android.widget.LinearLayout? visibility:private' type=android.widget.LinearLayout? origin=null
+                          receiver: GET_VAR '<this>: com.example.seamless.MainActivity declared in com.example.seamless.MainActivity.showSendingProgressUi' type=com.example.seamless.MainActivity origin=null
+                      CALL 'public final fun not (): kotlin.Boolean [operator] declared in kotlin.Boolean' type=kotlin.Boolean origin=null
+                        $this: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+                          arg0: GET_VAR 'val tmp0: android.widget.LinearLayout? [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=android.widget.LinearLayout? origin=null
+                          arg1: CONST Null type=kotlin.Nothing? value=null
+                    then: GET_VAR 'val tmp0: android.widget.LinearLayout? [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=android.widget.LinearLayout? origin=null
+                  BRANCH
+                    if: CONST Boolean type=kotlin.Boolean value=true
+                    then: BLOCK type=kotlin.Unit origin=null
+                      CALL 'public final fun throwUninitializedPropertyAccessException (propertyName: kotlin.String): kotlin.Unit declared in kotlin.jvm.internal.Intrinsics' type=kotlin.Unit origin=null
+                        propertyName: CONST String type=kotlin.String value="sendingFilesContainer"
+              p0: GET_VAR 'val row: android.widget.LinearLayout [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=android.widget.LinearLayout origin=null
+            CALL 'public final fun set <K, V> (key: K of kotlin.collections.MapsKt.set, value: V of kotlin.collections.MapsKt.set): kotlin.Unit [inline,operator] declared in kotlin.collections.MapsKt' type=kotlin.Unit origin=EQ
+              <K>: android.net.Uri
+              <V>: com.example.seamless.MainActivity.FileRowUI
+              $receiver: GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:fileRowUIs type:kotlin.collections.MutableMap<android.net.Uri, com.example.seamless.MainActivity.FileRowUI> visibility:private [final]' type=kotlin.collections.MutableMap<android.net.Uri, com.example.seamless.MainActivity.FileRowUI> origin=null
+                receiver: GET_VAR '<this>: com.example.seamless.MainActivity declared in com.example.seamless.MainActivity.showSendingProgressUi' type=com.example.seamless.MainActivity origin=null
+              key: GET_VAR 'val uri: @[JvmSuppressWildcards(suppress = <null>)] android.net.Uri [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=@[JvmSuppressWildcards(suppress = <null>)] android.net.Uri origin=null
+              value: CONSTRUCTOR_CALL 'public constructor <init> (progressIndicator: com.google.android.material.progressindicator.CircularProgressIndicator, imgCheck: android.widget.TextView, tvName: android.widget.TextView) [primary] declared in com.example.seamless.MainActivity.FileRowUI' type=com.example.seamless.MainActivity.FileRowUI origin=null
+                progressIndicator: GET_VAR 'val circProgress: com.google.android.material.progressindicator.CircularProgressIndicator [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=com.google.android.material.progressindicator.CircularProgressIndicator origin=null
+                imgCheck: GET_VAR 'val checkmark: android.widget.TextView [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=android.widget.TextView origin=null
+                tvName: GET_VAR 'val nameText: android.widget.TextView [val] declared in com.example.seamless.MainActivity.showSendingProgressUi' type=android.widget.TextView origin=null
+    COMPOSITE type=kotlin.Unit origin=null
+      CALL 'public final fun launch$default (context: kotlin.coroutines.CoroutineContext?, start: kotlinx.coroutines.CoroutineStart?, block: @[ExtensionFunctionType] kotlin.coroutines.SuspendFunction1<kotlinx.coroutines.CoroutineScope, kotlin.Unit>, $mask0: kotlin.Int, $handler: kotlin.Any?): kotlinx.coroutines.Job declared in kotlinx.coroutines.BuildersKt' type=kotlinx.coroutines.Job origin=DEFAULT_DISPATCH_CALL
+        $receiver: CALL 'public final fun <get-lifecycleScope> (): androidx.lifecycle.LifecycleCoroutineScope declared in androidx.lifecycle.LifecycleOwnerKt' type=androidx.lifecycle.LifecycleCoroutineScope origin=GET_PROPERTY
+          $receiver: GET_VAR '<this>: com.example.seamless.MainActivity declared in com.example.seamless.MainActivity.showSendingProgressUi' type=com.example.seamless.MainActivity origin=null
+        context: CALL 'public final fun <get-IO> (): kotlinx.coroutines.CoroutineDispatcher declared in kotlinx.coroutines.Dispatchers' type=kotlinx.coroutines.CoroutineDispatcher origin=GET_PROPERTY
+        start: COMPOSITE type=kotlinx.coroutines.CoroutineStart? origin=DEFAULT_VALUE
+          CONST Null type=kotlinx.coroutines.CoroutineStart? value=null
+        block: BLOCK type=com.example.seamless.MainActivity.showSendingProgressUi.<no name provided> origin=null
+          CLASS SUSPEND_LAMBDA CLASS name:<no name provided> modality:FINAL visibility:public/*package*/ superTypes:[kotlin.coroutines.jvm.internal.SuspendLambda; kotlin.jvm.functions.Function2<kotlinx.coroutines.CoroutineScope, kotlin.coroutines.Continuation<kotlin.Unit>?, kotlin.Any?>]
+            $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>
+            FIELD name:label type:kotlin.Int visibility:public/*package*/
+            CONSTRUCTOR SUSPEND_LAMBDA visibility:public/*package*/ <> (this$0:com.example.seamless.MainActivity, $targetIp:kotlin.String, $completion:kotlin.coroutines.Continuation<com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>>?) returnType:com.example.seamless.MainActivity.showSendingProgressUi.<no name provided> [primary]
+              VALUE_PARAMETER BOUND_RECEIVER_PARAMETER name:this$0 index:0 type:com.example.seamless.MainActivity
+              VALUE_PARAMETER BOUND_VALUE_PARAMETER name:$targetIp index:1 type:kotlin.String
+              VALUE_PARAMETER name:$completion index:2 type:kotlin.coroutines.Continuation<com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>>?
+              BLOCK_BODY
+                SET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:this$0 type:com.example.seamless.MainActivity visibility:public/*package*/ [final] declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>' type=kotlin.Unit origin=INITIALIZER_OF_FIELD_FOR_CAPTURED_VALUE
+                  receiver: GET_VAR '<this>: com.example.seamless.MainActivity.showSendingProgressUi.<no name provided> declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>' type=com.example.seamless.MainActivity.showSendingProgressUi.<no name provided> origin=null
+                  value: GET_VAR 'this$0: com.example.seamless.MainActivity declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>.<init>' type=com.example.seamless.MainActivity origin=null
+                SET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$targetIp type:kotlin.String visibility:public/*package*/ [final] declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>' type=kotlin.Unit origin=INITIALIZER_OF_FIELD_FOR_CAPTURED_VALUE
+                  receiver: GET_VAR '<this>: com.example.seamless.MainActivity.showSendingProgressUi.<no name provided> declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>' type=com.example.seamless.MainActivity.showSendingProgressUi.<no name provided> origin=null
+                  value: GET_VAR '$targetIp: kotlin.String declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>.<init>' type=kotlin.String origin=null
+                DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> (arity: kotlin.Int, $completion: kotlin.coroutines.Continuation<kotlin.Any?>?) declared in kotlin.coroutines.jvm.internal.SuspendLambda'
+                  arity: CONST Int type=kotlin.Int value=2
+                  $completion: GET_VAR '$completion: kotlin.coroutines.Continuation<com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>>? declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>.<init>' type=kotlin.coroutines.Continuation<com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>>? origin=null
+                BLOCK type=kotlin.Unit origin=null
+            FUN name:invokeSuspend visibility:public modality:FINAL <> ($this:com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>, $result:kotlin.Result<kotlin.Any?>) returnType:kotlin.Any?
+              overridden:
+                protected abstract fun invokeSuspend ($result: kotlin.Result<kotlin.Any?>): kotlin.Any? declared in kotlin.coroutines.jvm.internal.SuspendLambda
+              $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>
+              VALUE_PARAMETER name:$result index:0 type:kotlin.Result<kotlin.Any?>
+              BLOCK_BODY
+                CALL 'public final fun access$processSendFiles ($this: com.example.seamless.MainActivity, targetIp: kotlin.String, $completion: kotlin.coroutines.Continuation<kotlin.Unit>): kotlin.Any? [suspend] declared in com.example.seamless.MainActivity' type=kotlin.Unit origin=null
+                  $this: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:this$0 type:com.example.seamless.MainActivity visibility:public/*package*/ [final] declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>' type=com.example.seamless.MainActivity origin=null
+                    receiver: GET_VAR '<this>: com.example.seamless.MainActivity.showSendingProgressUi.<no name provided> declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>.invokeSuspend' type=com.example.seamless.MainActivity.showSendingProgressUi.<no name provided> origin=null
+                  targetIp: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$targetIp type:kotlin.String visibility:public/*package*/ [final] declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>' type=kotlin.String origin=null
+                    receiver: GET_VAR '<this>: com.example.seamless.MainActivity.showSendingProgressUi.<no name provided> declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>.invokeSuspend' type=com.example.seamless.MainActivity.showSendingProgressUi.<no name provided> origin=null
+                  $completion: GET_VAR '<this>: com.example.seamless.MainActivity.showSendingProgressUi.<no name provided> declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>.invokeSuspend' type=com.example.seamless.MainActivity.showSendingProgressUi.<no name provided> origin=null
+            FUN name:create visibility:public modality:FINAL <> ($this:com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>, value:kotlin.Any?, $completion:kotlin.coroutines.Continuation<kotlin.Nothing>) returnType:kotlin.coroutines.Continuation<kotlin.Unit>
+              overridden:
+                public open fun create (value: kotlin.Any?, $completion: kotlin.coroutines.Continuation<kotlin.Nothing>): kotlin.coroutines.Continuation<kotlin.Unit> declared in kotlin.coroutines.jvm.internal.SuspendLambda
+              $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>
+              VALUE_PARAMETER name:value index:0 type:kotlin.Any?
+              VALUE_PARAMETER name:$completion index:1 type:kotlin.coroutines.Continuation<kotlin.Nothing>
+              BLOCK_BODY
+                RETURN type=kotlin.Nothing from='public final fun create (value: kotlin.Any?, $completion: kotlin.coroutines.Continuation<kotlin.Nothing>): kotlin.coroutines.Continuation<kotlin.Unit> declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>'
+                  CONSTRUCTOR_CALL 'public/*package*/ constructor <init> (this$0: com.example.seamless.MainActivity, $targetIp: kotlin.String, $completion: kotlin.coroutines.Continuation<com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>>?) [primary] declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>' type=com.example.seamless.MainActivity.showSendingProgressUi.<no name provided> origin=null
+                    this$0: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:this$0 type:com.example.seamless.MainActivity visibility:public/*package*/ [final] declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>' type=com.example.seamless.MainActivity origin=null
+                      receiver: GET_VAR '<this>: com.example.seamless.MainActivity.showSendingProgressUi.<no name provided> declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>.create' type=com.example.seamless.MainActivity.showSendingProgressUi.<no name provided> origin=null
+                    $targetIp: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$targetIp type:kotlin.String visibility:public/*package*/ [final] declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>' type=kotlin.String origin=null
+                      receiver: GET_VAR '<this>: com.example.seamless.MainActivity.showSendingProgressUi.<no name provided> declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>.create' type=com.example.seamless.MainActivity.showSendingProgressUi.<no name provided> origin=null
+                    $completion: GET_VAR '$completion: kotlin.coroutines.Continuation<kotlin.Nothing> declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>.create' type=kotlin.coroutines.Continuation<kotlin.Nothing> origin=null
+            FUN name:invoke visibility:public modality:FINAL <> ($this:com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>, p1:kotlinx.coroutines.CoroutineScope, p2:kotlin.coroutines.Continuation<kotlin.Unit>?) returnType:kotlin.Any?
+              overridden:
+                public abstract fun invoke (p1: P1 of kotlin.jvm.functions.Function2, p2: P2 of kotlin.jvm.functions.Function2): R of kotlin.jvm.functions.Function2 declared in kotlin.jvm.functions.Function2
+              $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>
+              VALUE_PARAMETER name:p1 index:0 type:kotlinx.coroutines.CoroutineScope
+              VALUE_PARAMETER name:p2 index:1 type:kotlin.coroutines.Continuation<kotlin.Unit>?
+              BLOCK_BODY
+                RETURN type=kotlin.Nothing from='public final fun invoke (p1: kotlinx.coroutines.CoroutineScope, p2: kotlin.coroutines.Continuation<kotlin.Unit>?): kotlin.Any? declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>'
+                  CALL 'public final fun invokeSuspend ($result: kotlin.Result<kotlin.Any?>): kotlin.Any? declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>' type=kotlin.Any? origin=null
+                    $this: TYPE_OP type=com.example.seamless.MainActivity.showSendingProgressUi.<no name provided> origin=IMPLICIT_CAST typeOperand=com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>
+                      CALL 'public final fun create (value: kotlin.Any?, $completion: kotlin.coroutines.Continuation<kotlin.Nothing>): kotlin.coroutines.Continuation<kotlin.Unit> declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>' type=kotlin.coroutines.Continuation<kotlin.Unit> origin=null
+                        $this: GET_VAR '<this>: com.example.seamless.MainActivity.showSendingProgressUi.<no name provided> declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>.invoke' type=com.example.seamless.MainActivity.showSendingProgressUi.<no name provided> origin=null
+                        value: GET_VAR 'p1: kotlinx.coroutines.CoroutineScope declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>.invoke' type=kotlinx.coroutines.CoroutineScope origin=null
+                        $completion: GET_VAR 'p2: kotlin.coroutines.Continuation<kotlin.Unit>? declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>.invoke' type=kotlin.coroutines.Continuation<kotlin.Unit>? origin=null
+                    $result: CALL 'public final fun <unsafe-coerce> <T, R> (v: T of kotlin.jvm.internal.<unsafe-coerce>): R of kotlin.jvm.internal.<unsafe-coerce> declared in kotlin.jvm.internal' type=kotlin.Result<kotlin.Any?> origin=null
+                      <T>: kotlin.Any?
+                      <R>: kotlin.Result<kotlin.Any?>
+                      v: GET_FIELD 'FIELD FIELD_FOR_OBJECT_INSTANCE name:INSTANCE type:kotlin.Unit visibility:public [final,static] declared in kotlin.Unit' type=kotlin.Unit origin=null
+            FIELD FIELD_FOR_CAPTURED_VALUE name:this$0 type:com.example.seamless.MainActivity visibility:public/*package*/ [final]
+            FIELD FIELD_FOR_CAPTURED_VALUE name:$targetIp type:kotlin.String visibility:public/*package*/ [final]
+            FUN BRIDGE name:invoke visibility:public modality:OPEN <> ($this:com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>, p1:kotlin.Any?, p2:kotlin.Any?) returnType:kotlin.Any?
+              $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>
+              VALUE_PARAMETER BRIDGE name:p1 index:0 type:kotlin.Any?
+              VALUE_PARAMETER BRIDGE name:p2 index:1 type:kotlin.Any?
+              EXPRESSION_BODY
+                RETURN type=kotlin.Nothing from='public open fun invoke (p1: kotlin.Any?, p2: kotlin.Any?): kotlin.Any? declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>'
+                  CALL 'public final fun invoke (p1: kotlinx.coroutines.CoroutineScope, p2: kotlin.coroutines.Continuation<kotlin.Unit>?): kotlin.Any? declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>' type=kotlin.Any? origin=BRIDGE_DELEGATION
+                    $this: GET_VAR '<this>: com.example.seamless.MainActivity.showSendingProgressUi.<no name provided> declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>.invoke' type=com.example.seamless.MainActivity.showSendingProgressUi.<no name provided> origin=null
+                    p1: TYPE_OP type=kotlinx.coroutines.CoroutineScope origin=IMPLICIT_CAST typeOperand=kotlinx.coroutines.CoroutineScope
+                      GET_VAR 'p1: kotlin.Any? declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>.invoke' type=kotlin.Any? origin=null
+                    p2: TYPE_OP type=kotlin.coroutines.Continuation<*> origin=IMPLICIT_CAST typeOperand=kotlin.coroutines.Continuation<*>
+                      GET_VAR 'p2: kotlin.Any? declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>.invoke' type=kotlin.Any? origin=null
+          CONSTRUCTOR_CALL 'public/*package*/ constructor <init> (this$0: com.example.seamless.MainActivity, $targetIp: kotlin.String, $completion: kotlin.coroutines.Continuation<com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>>?) [primary] declared in com.example.seamless.MainActivity.showSendingProgressUi.<no name provided>' type=com.example.seamless.MainActivity.showSendingProgressUi.<no name provided> origin=null
+            this$0: GET_VAR '<this>: com.example.seamless.MainActivity declared in com.example.seamless.MainActivity.showSendingProgressUi' type=com.example.seamless.MainActivity origin=null
+            $targetIp: GET_VAR 'targetIp: kotlin.String declared in com.example.seamless.MainActivity.showSendingProgressUi' type=kotlin.String origin=null
+            $completion: CONST Null type=kotlin.Nothing? value=null
+        $mask0: CONST Int type=kotlin.Int value=2
+        $handler: CONST Null type=kotlin.Any? value=null
+      COMPOSITE type=kotlin.Unit origin=null
+
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.generate(FunctionCodegen.kt:47)
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.generate$default(FunctionCodegen.kt:40)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ClassCodegen.generateMethodNode(ClassCodegen.kt:406)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ClassCodegen.generateMethod(ClassCodegen.kt:423)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ClassCodegen.generate(ClassCodegen.kt:168)
+	at org.jetbrains.kotlin.backend.jvm.FileCodegen.lower(JvmPhases.kt:39)
+	at org.jetbrains.kotlin.backend.common.phaser.PhaseFactoriesKt.createFilePhase$lambda$4(PhaseFactories.kt:71)
+	at org.jetbrains.kotlin.backend.common.phaser.PhaseBuildersKt$createSimpleNamedCompilerPhase$1.phaseBody(PhaseBuilders.kt:69)
+	at org.jetbrains.kotlin.backend.common.phaser.SimpleNamedCompilerPhase.phaseBody(CompilerPhase.kt:226)
+	at org.jetbrains.kotlin.backend.common.phaser.AbstractNamedCompilerPhase.invoke(CompilerPhase.kt:113)
+	at org.jetbrains.kotlin.backend.common.phaser.PerformByIrFilePhase.invokeSequential(performByIrFile.kt:62)
+	... 43 more
+Caused by: java.lang.RuntimeException: Exception while generating code for:
+FUN INLINE_LAMBDA name:showSendingProgressUi$lambda$19 visibility:private modality:FINAL <> ($receiver:android.widget.TextView, $filename:kotlin.String) returnType:kotlin.Unit
+  $receiver: VALUE_PARAMETER name:$this$apply type:android.widget.TextView
+  VALUE_PARAMETER BOUND_VALUE_PARAMETER name:$filename index:0 type:kotlin.String
+  BLOCK_BODY
+    VAR name:$i$a$-apply-MainActivity$showSendingProgressUi$nameText$1 type:kotlin.Int [val]
+      CONST Int type=kotlin.Int value=0
+    CALL 'public final fun setText (p0: @[FlexibleNullability] kotlin.CharSequence?): kotlin.Unit declared in android.widget.TextView' type=kotlin.Unit origin=EQ
+      $this: GET_VAR '$this$apply: android.widget.TextView declared in com.example.seamless.MainActivity.showSendingProgressUi$lambda$19' type=android.widget.TextView origin=null
+      p0: GET_VAR '$filename: kotlin.String declared in com.example.seamless.MainActivity.showSendingProgressUi$lambda$19' type=kotlin.String origin=null
+    SET_FIELD 'FIELD IR_EXTERNAL_JAVA_DECLARATION_STUB name:textColor type:kotlin.Int visibility:public [final,static] declared in android.R.attr' type=kotlin.Unit superQualifierSymbol=android.R.attr origin=EQ
+      value: CONST Int type=kotlin.Int value=-1
+    CALL 'public open fun setTextSize (p0: kotlin.Float): kotlin.Unit declared in android.widget.TextView' type=kotlin.Unit origin=EQ
+      $this: GET_VAR '$this$apply: android.widget.TextView declared in com.example.seamless.MainActivity.showSendingProgressUi$lambda$19' type=android.widget.TextView origin=null
+      p0: CONST Float type=kotlin.Float value=14.0
+    CALL 'public open fun setPadding (p0: kotlin.Int, p1: kotlin.Int, p2: kotlin.Int, p3: kotlin.Int): kotlin.Unit declared in android.widget.TextView' type=kotlin.Unit origin=null
+      $this: GET_VAR '$this$apply: android.widget.TextView declared in com.example.seamless.MainActivity.showSendingProgressUi$lambda$19' type=android.widget.TextView origin=null
+      p0: CONST Int type=kotlin.Int value=30
+      p1: CONST Int type=kotlin.Int value=0
+      p2: CONST Int type=kotlin.Int value=0
+      p3: CONST Int type=kotlin.Int value=0
+    CALL 'public open fun setLayoutParams (p0: @[FlexibleNullability] android.view.ViewGroup.LayoutParams?): kotlin.Unit [fake_override] declared in android.widget.TextView' type=kotlin.Unit origin=EQ
+      $this: GET_VAR '$this$apply: android.widget.TextView declared in com.example.seamless.MainActivity.showSendingProgressUi$lambda$19' type=android.widget.TextView origin=null
+      p0: CONSTRUCTOR_CALL 'public constructor <init> (p0: kotlin.Int, p1: kotlin.Int) declared in android.widget.LinearLayout.LayoutParams' type=android.widget.LinearLayout.LayoutParams origin=null
+        p0: CONST Int type=kotlin.Int value=-2
+        p1: CONST Int type=kotlin.Int value=-2
+
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.generate(FunctionCodegen.kt:47)
+	at org.jetbrains.kotlin.backend.jvm.codegen.IrSourceCompilerForInline.generateLambdaBody(IrSourceCompilerForInline.kt:67)
+	at org.jetbrains.kotlin.codegen.inline.ExpressionLambda.generateLambdaBody(LambdaInfo.kt:72)
+	at org.jetbrains.kotlin.backend.jvm.codegen.IrInlineCodegen.genValueAndPut(IrInlineCodegen.kt:100)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitCall$handleParameter(ExpressionCodegen.kt:616)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitCall(ExpressionCodegen.kt:644)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitCall(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.expressions.IrCall.accept(IrCall.kt:24)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitVariable(ExpressionCodegen.kt:790)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitVariable(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.declarations.IrVariable.accept(IrVariable.kt:36)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitStatementContainer(ExpressionCodegen.kt:579)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitContainerExpression(ExpressionCodegen.kt:593)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitContainerExpression(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.visitors.IrElementVisitor$DefaultImpls.visitBlock(IrElementVisitor.kt:122)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitBlock(ExpressionCodegen.kt:413)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitBlock(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.expressions.IrBlock.accept(IrBlock.kt:18)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitStatementContainer(ExpressionCodegen.kt:579)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitContainerExpression(ExpressionCodegen.kt:593)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitContainerExpression(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.visitors.IrElementVisitor$DefaultImpls.visitBlock(IrElementVisitor.kt:122)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitBlock(ExpressionCodegen.kt:413)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitBlock(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.expressions.IrBlock.accept(IrBlock.kt:18)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitWhileLoop(ExpressionCodegen.kt:1182)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitWhileLoop(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.expressions.IrWhileLoop.accept(IrWhileLoop.kt:19)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitStatementContainer(ExpressionCodegen.kt:579)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitContainerExpression(ExpressionCodegen.kt:593)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitContainerExpression(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.visitors.IrElementVisitor$DefaultImpls.visitBlock(IrElementVisitor.kt:122)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitBlock(ExpressionCodegen.kt:413)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitBlock(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.expressions.IrBlock.accept(IrBlock.kt:18)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitStatementContainer(ExpressionCodegen.kt:579)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitBlockBody(ExpressionCodegen.kt:584)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitBlockBody(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.expressions.IrBlockBody.accept(IrBlockBody.kt:20)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.generate(ExpressionCodegen.kt:240)
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.doGenerate(FunctionCodegen.kt:123)
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.generate(FunctionCodegen.kt:44)
+	... 53 more
+Caused by: java.lang.AssertionError: access of const val: SET_FIELD 'FIELD IR_EXTERNAL_JAVA_DECLARATION_STUB name:textColor type:kotlin.Int visibility:public [final,static] declared in android.R.attr' type=kotlin.Unit superQualifierSymbol=android.R.attr origin=EQ
+  value: CONST Int type=kotlin.Int value=-1
+
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitFieldAccess(ExpressionCodegen.kt:861)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitFieldAccess(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.visitors.IrElementVisitor$DefaultImpls.visitSetField(IrElementVisitor.kt:206)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitSetField(ExpressionCodegen.kt:908)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitSetField(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.expressions.IrSetField.accept(IrSetField.kt:21)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitStatementContainer(ExpressionCodegen.kt:579)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitBlockBody(ExpressionCodegen.kt:584)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitBlockBody(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.expressions.IrBlockBody.accept(IrBlockBody.kt:20)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.generate(ExpressionCodegen.kt:240)
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.doGenerate(FunctionCodegen.kt:123)
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.generate(FunctionCodegen.kt:44)
+	... 94 more
+
+
