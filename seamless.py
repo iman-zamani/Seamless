@@ -78,6 +78,7 @@ class SeamlessApp(ctk.CTk):
         self.current_state = "menu" # Tracks where the back button should go
         self.cancel_transfer = False # Flag for mid-transfer cancellation
         self.active_socket = None
+        self.active_receive_sockets = []
         # --- HEADER & NAVIGATION ---
         self.header_frame = ctk.CTkFrame(self, fg_color="transparent")
         self.header_frame.pack(fill="x", padx=20, pady=(20, 0))
@@ -157,8 +158,31 @@ class SeamlessApp(ctk.CTk):
             self.show_select_files_ui()
         elif self.current_state == "sending":
             self.confirm_cancel()
+        elif self.current_state == "receive":
+            self.cancel_receiving()
         else:
             self.show_menu()
+
+    def cancel_receiving(self):
+        # If there are active transfers, ask for confirmation
+        if self.active_receive_sockets:
+            confirm = messagebox.askyesno("Cancel Receiving", 
+                                          "Files are currently being received.\nAre you sure you want to cancel?")
+            if not confirm:
+                return
+        
+        # Shut down the server flag
+        self.server_running = False
+        
+        # Force close all active client sockets to break any blocked recv() calls
+        for sock in self.active_receive_sockets:
+            try:
+                sock.close()
+            except Exception:
+                pass
+        self.active_receive_sockets.clear()
+        
+        self.show_menu()
 
     def update_navigation(self, state):
         self.current_state = state
@@ -497,10 +521,14 @@ class SeamlessApp(ctk.CTk):
         server_socket.close()
 
     def handle_incoming_file(self, client_socket):
+        self.active_receive_sockets.append(client_socket)
+        save_path = None
+        
         try:
             client_socket.settimeout(10.0)
             header_bytes = b""
             while True:
+                if not self.server_running: return # Exit if cancelled during header read
                 b = client_socket.recv(1)
                 if b == b'\n': break
                 header_bytes += b
@@ -509,8 +537,10 @@ class SeamlessApp(ctk.CTk):
             filename, filesize = header.split(SEPARATOR)
             filesize = int(filesize)
             
-            self.after(0, self.log_box.insert, "end", f"↓ Incoming: {filename} ({(filesize/1024/1024):.2f} MB)\n")
-            self.after(0, self.receive_progress.set, 0)
+            # Check if UI still exists before updating
+            if self.server_running and hasattr(self, 'log_box') and self.log_box.winfo_exists():
+                self.after(0, self.log_box.insert, "end", f"↓ Incoming: {filename} ({(filesize/1024/1024):.2f} MB)\n")
+                self.after(0, self.receive_progress.set, 0)
             
             downloads_path = Path.home() / "Downloads"
             downloads_path.mkdir(parents=True, exist_ok=True)
@@ -519,20 +549,48 @@ class SeamlessApp(ctk.CTk):
             received_total = 0
             with open(save_path, "wb") as f:
                 while received_total < filesize:
+                    if not self.server_running: 
+                        break # Break loop if user clicks Back
+                    
                     bytes_read = client_socket.recv(BUFFER_SIZE)
                     if not bytes_read: break
                     f.write(bytes_read)
                     received_total += len(bytes_read)
                     
-                    progress = received_total / filesize
-                    self.after(0, self.receive_progress.set, progress)
-                    self.after(0, lambda txt=f"Receiving {filename}: {int(progress*100)}%": self.lbl_status.configure(text=txt))
+                    # Safe UI progress update
+                    if self.server_running and hasattr(self, 'receive_progress') and self.receive_progress.winfo_exists():
+                        progress = received_total / filesize
+                        self.after(0, self.receive_progress.set, progress)
+                        
+                        # Update status label if it still exists
+                        if hasattr(self, 'lbl_status') and self.lbl_status.winfo_exists():
+                            self.after(0, lambda txt=f"Receiving {filename}: {int(progress*100)}%": self.lbl_status.configure(text=txt))
 
-            self.after(0, self.log_box.insert, "end", f"✓ Saved: {filename}\n")
-            self.after(0, lambda: self.lbl_status.configure(text="Transfer Complete"))
-            client_socket.close()
+            # Transfer finished successfully
+            if self.server_running:
+                if hasattr(self, 'log_box') and self.log_box.winfo_exists():
+                    self.after(0, self.log_box.insert, "end", f"✓ Saved: {filename}\n")
+                    if hasattr(self, 'lbl_status') and self.lbl_status.winfo_exists():
+                        self.after(0, lambda: self.lbl_status.configure(text="Transfer Complete"))
+            else:
+                # Cleanup partial file if the transfer was aborted
+                if save_path and save_path.exists():
+                    try:
+                        save_path.unlink()
+                    except Exception:
+                        pass
+
         except Exception as e:
-            self.after(0, self.log_box.insert, "end", f"⚠ Error: {e}\n")
+            # Only show errors if we are still actually on the receive screen
+            if self.server_running and hasattr(self, 'log_box') and self.log_box.winfo_exists():
+                self.after(0, self.log_box.insert, "end", f"⚠ Error: {e}\n")
+        finally:
+            try:
+                client_socket.close()
+            except Exception: pass
+            
+            if client_socket in self.active_receive_sockets:
+                self.active_receive_sockets.remove(client_socket)
 
 if __name__ == "__main__":
     app = SeamlessApp()
