@@ -343,7 +343,7 @@ class SeamlessApp(ctk.CTk):
                         # Safely update UI
                         self.after(0, circ_widget.set, file_prog)
                         self.after(0, self.overall_progress_bar.set, overall_prog)
-                        self.after(0, self.lbl_overall.configure, text=f"Total Progress: {int(overall_prog*100)}%")
+                        self.after(0, lambda txt=f"Total Progress: {int(overall_prog*100)}%": self.lbl_overall.configure(text=txt)) 
 
                 s.close()
                 if not self.cancel_transfer:
@@ -511,10 +511,10 @@ class SeamlessApp(ctk.CTk):
                     
                     progress = received_total / filesize
                     self.after(0, self.receive_progress.set, progress)
-                    self.after(0, self.lbl_status.configure, text=f"Receiving {filename}: {int(progress*100)}%")
+                    self.after(0, lambda txt=f"Receiving {filename}: {int(progress*100)}%": self.lbl_status.configure(text=txt))
 
             self.after(0, self.log_box.insert, "end", f"✓ Saved: {filename}\n")
-            self.after(0, self.lbl_status.configure, text="Transfer Complete")
+            self.after(0, lambda: self.lbl_status.configure(text="Transfer Complete"))
             client_socket.close()
         except Exception as e:
             self.after(0, self.log_box.insert, "end", f"⚠ Error: {e}\n")
