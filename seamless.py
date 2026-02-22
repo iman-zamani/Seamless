@@ -77,7 +77,7 @@ class SeamlessApp(ctk.CTk):
         self.server_running = False
         self.current_state = "menu" # Tracks where the back button should go
         self.cancel_transfer = False # Flag for mid-transfer cancellation
-
+        self.active_socket = None
         # --- HEADER & NAVIGATION ---
         self.header_frame = ctk.CTkFrame(self, fg_color="transparent")
         self.header_frame.pack(fill="x", padx=20, pady=(20, 0))
@@ -304,6 +304,13 @@ class SeamlessApp(ctk.CTk):
         if confirm:
             self.cancel_transfer = True
             self.btn_cancel.configure(state="disabled", text="Cancelling...")
+            
+            # kill the active socket to break any blocked network calls
+            if hasattr(self, 'active_socket') and self.active_socket:
+                try:
+                    self.active_socket.close()
+                except Exception:
+                    pass
 
     # --- SENDING LOGIC (THREADED) ---
     def process_send_files(self, target_ip):
@@ -319,6 +326,9 @@ class SeamlessApp(ctk.CTk):
                 filename = os.path.basename(filepath)
                 
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.active_socket = s    # Store reference for the cancel button
+                s.settimeout(10.0)        # Timeout if receiver stops responding for 10s
+                
                 s.connect((target_ip, TCP_PORT))
                 s.send(f"{filename}{SEPARATOR}{filesize}\n".encode())
                 
@@ -340,14 +350,13 @@ class SeamlessApp(ctk.CTk):
                         file_prog = file_bytes_sent / filesize
                         overall_prog = total_bytes_sent / total_bytes_to_send
                         
-                        # Safely update UI
                         self.after(0, circ_widget.set, file_prog)
                         self.after(0, self.overall_progress_bar.set, overall_prog)
                         self.after(0, lambda txt=f"Total Progress: {int(overall_prog*100)}%": self.lbl_overall.configure(text=txt)) 
 
                 s.close()
                 if not self.cancel_transfer:
-                    self.after(0, circ_widget.set, 1.0) # Trigger check mark only if completed
+                    self.after(0, circ_widget.set, 1.0) 
 
             if self.cancel_transfer:
                 self.after(0, self.show_cancelled_and_return)
@@ -355,8 +364,13 @@ class SeamlessApp(ctk.CTk):
                 self.after(0, self.show_success_and_return)
 
         except Exception as e:
-            self.after(0, lambda: messagebox.showerror("Transfer Error", str(e)))
-            self.after(0, self.show_menu)
+            # If the user clicked cancel, closing the socket caused this exception. Let it end gracefully.
+            if self.cancel_transfer:
+                self.after(0, self.show_cancelled_and_return)
+            else:
+                # If it was a genuine network drop/timeout, show the error
+                self.after(0, lambda err=e: messagebox.showerror("Transfer Error", f"Connection lost: {err}"))
+                self.after(0, self.show_menu)
 
     def show_success_and_return(self):
         messagebox.showinfo("Success", "All files sent successfully!")
@@ -484,6 +498,7 @@ class SeamlessApp(ctk.CTk):
 
     def handle_incoming_file(self, client_socket):
         try:
+            client_socket.settimeout(10.0)
             header_bytes = b""
             while True:
                 b = client_socket.recv(1)
