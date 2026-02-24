@@ -77,3 +77,66 @@ __pycache__/
 # ------------------------------------ #
 # You mentioned the current directory is a git repo, so explicitly ignoring the git directory itself.
 /.git/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# =========================
+# macOS
+# =========================
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# =========================
+# Python
+# =========================
+# Virtual environments
+ENV/
+.venv/
+venv/
+env/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# =========================
+# Android & Gradle
+# =========================
+# Build artifacts
+build/
+.gradle/
+captures/
+
+# Local configuration file (SDK path, etc.)
+local.properties
+
+# Keystore files
+*.jks
+*.keystore
+
+# Kotlin cache
+.kotlin/sessions/
+.kotlin/errors/
+
+# =========================
+# IDEs (Android Studio / IntelliJ)
+# =========================
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/caches/
+.idea/deviceStreaming.xml
+.idea/assetWizardSettings.xml
+.idea/dictionaries/
